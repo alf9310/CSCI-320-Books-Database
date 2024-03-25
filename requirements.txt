@@ -1,0 +1,3 @@
+python-dotenv
+sshtunnel
+psycopg2-binary
