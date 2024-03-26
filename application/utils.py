@@ -11,7 +11,7 @@ def ask_continue(prompt: str) -> bool:
             return True
         if (user_in.upper() == "N" or user_in.upper() == "NO"): 
             return False
-        print("Invalid input: usage [y/n/Yes/No/Y/N]")
+        print("Invalid input: usage [y/n]")
 
 
 def get_input_str(message: str) -> str:
