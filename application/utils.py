@@ -9,4 +9,4 @@ def ask_continue(prompt: str) -> bool:
             return True
         if (user_in.upper() == "N" or user_in.upper() == "NO"): 
             return False
-        print("Invalid input: Type one of the following ['Y'/'Yes'/'N'/'No']")
+        print("Invalid input: usage ['Y'/'Yes'/'N'/'No']")
