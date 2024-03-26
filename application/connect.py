@@ -24,56 +24,38 @@ def test_connection() -> None:
                 'host': 'localhost',
                 'port': server.local_bind_port
             }
-
-
             conn = psycopg2.connect(**params)
-            curs = conn.cursor()
             print("Database connection established")
-
-            # # database work
-
-            # postgreSQL_select_Query = "select * from ryan_ong_table"
-
-            # curs.execute(postgreSQL_select_Query)
-            # print("Selecting rows from mobile table using curs.fetchall")
-            # mobile_records = curs.fetchall()
-
-            # print("Print each row and it's columns values")
-            # for row in mobile_records:
-            #     print("test = ", row[0])
-            # conn.close()
     except:
         print("Connection failed")
 
 
 def execute_query(query: str) -> list:
-    try:
-        with SSHTunnelForwarder(('starbug.cs.rit.edu', 22),
-                                ssh_username=USERNAME,
-                                ssh_password=PASSWORD,
-                                remote_bind_address=('127.0.0.1', 5432)) as server:
-            server.start()
-            print("SSH tunnel established")
-            params = {
-                'database': DB_NAME,
-                'user': USERNAME,
-                'password': PASSWORD,
-                'host': 'localhost',
-                'port': server.local_bind_port
-            }
+    # try:
+    with SSHTunnelForwarder(('starbug.cs.rit.edu', 22),
+                            ssh_username=USERNAME,
+                            ssh_password=PASSWORD,
+                            remote_bind_address=('127.0.0.1', 5432)) as server:
+        server.start()
+        params = {
+            'database': DB_NAME,
+            'user': USERNAME,
+            'password': PASSWORD,
+            'host': 'localhost',
+            'port': server.local_bind_port
+        }
 
+        conn = psycopg2.connect(**params)
+        curs = conn.cursor()
+        
+        # database work
+        postgreSQL_select_Query = query
 
-            conn = psycopg2.connect(**params)
-            curs = conn.cursor()
-            # database work
+        curs.execute(postgreSQL_select_Query)
+        record = curs.fetchall()
 
-            postgreSQL_select_Query = query
-
-            curs.execute(postgreSQL_select_Query)
-            record = curs.fetchall()
-            print(record)
-            return record;
-    except:
-        print("Connection failed")
+        return record;
+    # except:
+    #     print("Connection failed")
 
    
