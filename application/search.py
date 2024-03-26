@@ -42,16 +42,60 @@ def search_by_length():
             WHERE length BETWEEN {min_length_in} AND {max_length_in} \
             ORDER BY length DESC"
         query_results = connect.execute_query(query_statement) 
-        
-        for results in query_results:
-            print(results)
+        if query_results: 
+            for results in query_results:
+                print(results)
+        else:
+            print("No results")
         
         prompt = "Want to keep searching?"
         is_still_searching = utils.ask_continue(prompt) 
 
+
 def search_by_min_age():
-    print("length")
+    is_still_searching = True
+    while(is_still_searching):
+        min_age_in = utils.get_input_int("What is your desired minimum age?\n-> ")
+
+        print(f'Your search for books will be targeted towards ages {min_age_in} and older\n')
+
+        query_statement = f"\
+            SELECT * \
+            FROM book \
+            WHERE min_age <= {min_age_in} \
+            ORDER BY min_age DESC"
+        query_results = connect.execute_query(query_statement) 
+        
+        if query_results: 
+            for results in query_results:
+                print(results)
+        else:
+            print("No results")
+        
+        prompt = "Want to keep searching?"
+        is_still_searching = utils.ask_continue(prompt)
 
 
 def search_by_max_age():
-    print("max_age")
+    is_still_searching = True
+    while(is_still_searching):
+        max_age_in = utils.get_input_int("What is your desired maximum age?\n-> ")
+
+        print(f'Your search for books will be targeted towards ages {max_age_in} and younger\n')
+
+        query_statement = f"\
+            SELECT * \
+            FROM book \
+            WHERE max_age >= {max_age_in} \
+            ORDER BY max_age DESC"
+        query_results = connect.execute_query(query_statement) 
+        
+        if query_results: 
+            for results in query_results:
+                print(results)
+        else:
+            print("No results")
+         
+        prompt = "Want to keep searching?"
+        is_still_searching = utils.ask_continue(prompt)
+    

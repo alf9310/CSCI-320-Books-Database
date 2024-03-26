@@ -31,7 +31,7 @@ def get_input_int(message: str) -> str:
     invalid_list = [""]
     while (True):
         user_in = input(message)
-        if user_in in invalid_list and user_in.isnumeric(): 
+        if user_in in invalid_list or not user_in.isnumeric(): 
             print("invalid number")
         else:
             break
