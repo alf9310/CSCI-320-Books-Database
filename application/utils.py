@@ -36,4 +36,3 @@ def get_input_int(message: str) -> str:
         else:
             break
     return user_in
-

@@ -23,11 +23,6 @@ def search_by_title() -> None:
         is_still_searching = utils.ask_continue(prompt) 
         
 
-def search_by_author() -> None:
-    # get author
-    print("get author") 
-
-
 def search_by_length():
     is_still_searching = True
     while(is_still_searching):
@@ -99,3 +94,46 @@ def search_by_max_age():
         prompt = "Want to keep searching?"
         is_still_searching = utils.ask_continue(prompt)
     
+
+def search_by_author() -> None:
+    is_still_searching = True
+    while(is_still_searching):
+        author_name = utils.get_input_str("What is/are the book(s) by some author that you are looking for?\n-> ")
+        
+        print(f'Your search was, {author_name}\n')
+
+        # from person list, find the person that is most like the inputted author
+        # then use the gotten persons to link them to the books they wrote
+        query_statement = f"\
+            SELECT * \
+            FROM book \
+            INNER JOIN written_by \
+            ON book.bid = written_by.bid \
+            INNER JOIN person \
+            ON person.pid = written_by.pid \
+            WHERE person_name ILIKE '%{author_name}%' \
+            ORDER BY person_name"
+        query_results = connect.execute_query(query_statement) 
+        if query_results: 
+            for results in query_results:
+                print(results)
+        else:
+            print("No results")
+        
+        prompt = "Want to keep searching?"
+        is_still_searching = utils.ask_continue(prompt) 
+     
+
+def search_by_published() -> None:
+    print("get published")
+
+
+def search_by_genre() -> None:
+    print("search genre")
+
+
+def search_by_rates() -> None:
+    print("search rates")
+
+
+# future work, a generic filter function
