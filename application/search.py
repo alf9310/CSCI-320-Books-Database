@@ -105,7 +105,7 @@ def search_by_author() -> None:
         # from person list, find the person that is most like the inputted author
         # then use the gotten persons to link them to the books they wrote
         query_statement = f"\
-            SELECT * \
+            SELECT book.title, person.person_name \
             FROM book \
             INNER JOIN written_by \
             ON book.bid = written_by.bid \
@@ -116,7 +116,7 @@ def search_by_author() -> None:
         query_results = connect.execute_query(query_statement) 
         if query_results: 
             for results in query_results:
-                print(results)
+                print(f'{results[0]} by {results[1]}')
         else:
             print("No results")
         
