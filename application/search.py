@@ -98,7 +98,7 @@ def search_by_max_age():
 def search_by_author() -> None:
     is_still_searching = True
     while(is_still_searching):
-        author_name = utils.get_input_str("What is/are the book(s) by some author that you are looking for?\n-> ")
+        author_name = utils.get_input_str("What wrote the book(s) you are looking for?\n-> ")
         
         print(f'Your search was, {author_name}\n')
 
@@ -125,12 +125,61 @@ def search_by_author() -> None:
      
 
 def search_by_published() -> None:
-    print("get published")
+    is_still_searching = True
+    while(is_still_searching):
+        publisher_name = utils.get_input_str("Who published the book(s) you are looking for?\n-> ")
+        
+        print(f'Your search was, {publisher_name}\n')
 
+        # from person list, find the person that is most like the inputted author
+        # then use the gotten persons to link them to the books they wrote
+        query_statement = f"\
+            SELECT book.title, person.person_name \
+            FROM book \
+            INNER JOIN published_by \
+            ON book.bid = published_by.bid \
+            INNER JOIN person \
+            ON person.pid = published_by.pid \
+            WHERE person_name ILIKE '%{publisher_name}%' \
+            ORDER BY person_name"
+        query_results = connect.execute_query(query_statement) 
+        if query_results: 
+            for results in query_results:
+                print(f'{results[0]} edited by {results[1]}')
+        else:
+            print("No results")
+        
+        prompt = "Want to keep searching?"
+        is_still_searching = utils.ask_continue(prompt) 
 
 
 def search_by_edited() -> None:
-    print("search by editedb")
+    is_still_searching = True
+    while(is_still_searching):
+        editor_name = utils.get_input_str("Who edited the book(s) you are looking for?\n-> ")
+        
+        print(f'Your search was, {editor_name}\n')
+
+        # from person list, find the person that is most like the inputted author
+        # then use the gotten persons to link them to the books they wrote
+        query_statement = f"\
+            SELECT book.title, person.person_name \
+            FROM book \
+            INNER JOIN edited_by \
+            ON book.bid = edited_by.bid \
+            INNER JOIN person \
+            ON person.pid = edited_by.pid \
+            WHERE person_name ILIKE '%{editor_name}%' \
+            ORDER BY person_name"
+        query_results = connect.execute_query(query_statement) 
+        if query_results: 
+            for results in query_results:
+                print(f'{results[0]} edited by {results[1]}')
+        else:
+            print("No results")
+        
+        prompt = "Want to keep searching?"
+        is_still_searching = utils.ask_continue(prompt) 
 
 
 # future work, make this able to take in a list? 
@@ -165,32 +214,6 @@ def search_by_genre() -> None:
 
 def search_by_rates() -> None:
     print("search rates")
-    # is_still_searching = True
-    # while(is_still_searching):
-    #     author_name = utils.get_input_str("What is/are the book(s) by some author that you are looking for?\n-> ")
-        
-    #     print(f'Your search was, {author_name}\n')
-
-    #     # from person list, find the person that is most like the inputted author
-    #     # then use the gotten persons to link them to the books they wrote
-    #     query_statement = f"\
-    #         SELECT book.title, person.person_name \
-    #         FROM book \
-    #         INNER JOIN written_by \
-    #         ON book.bid = written_by.bid \
-    #         INNER JOIN person \
-    #         ON person.pid = written_by.pid \
-    #         WHERE person_name ILIKE '%{author_name}%' \
-    #         ORDER BY person_name"
-    #     query_results = connect.execute_query(query_statement) 
-    #     if query_results: 
-    #         for results in query_results:
-    #             print(f'{results[0]} by {results[1]}')
-    #     else:
-    #         print("No results")
-        
-    #     prompt = "Want to keep searching?"
-    #     is_still_searching = utils.ask_continue(prompt) 
 
 
 # future work, a generic filter function
