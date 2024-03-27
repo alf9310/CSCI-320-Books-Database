@@ -131,8 +131,6 @@ def search_by_published() -> None:
         
         print(f'Your search was, {publisher_name}\n')
 
-        # from person list, find the person that is most like the inputted author
-        # then use the gotten persons to link them to the books they wrote
         query_statement = f"\
             SELECT book.title, person.person_name \
             FROM book \
@@ -160,8 +158,6 @@ def search_by_edited() -> None:
         
         print(f'Your search was, {editor_name}\n')
 
-        # from person list, find the person that is most like the inputted author
-        # then use the gotten persons to link them to the books they wrote
         query_statement = f"\
             SELECT book.title, person.person_name \
             FROM book \
@@ -190,8 +186,6 @@ def search_by_genre() -> None:
         
         print(f'Your search was, {genre}\n')
 
-        # from person list, find the person that is most like the inputted author
-        # then use the gotten persons to link them to the books they wrote
         query_statement = f"\
             SELECT book.title, genre.genre_name \
             FROM book \
@@ -213,7 +207,32 @@ def search_by_genre() -> None:
 
 
 def search_by_rates() -> None:
-    print("search rates")
+    is_still_searching = True
+    while(is_still_searching):
+        rating = utils.get_input_str("What book rating are you looking for? [1, 2, 3, 4, 5]\n-> ")
+        
+        print(f'Your search was, {rating}\n')
+
+        # rates contains UID's and their ratings for certain book
+        # select all common bids, average their rating, then 
+        # select all average bid that is closest to the inputted number
+        query_statement = f"\
+            SELECT book.title, rates.rating \
+            FROM book \
+            INNER JOIN rates \
+            ON book.bid = rates.rating \
+            WHERE rates.rating <= {rating} \
+            ORDER BY rates.rating"
+        query_results = connect.execute_query(query_statement) 
+        if query_results: 
+            for results in query_results:
+                print(f'{results[1]}:  {results[0]}')
+        else:
+            print("No results")
+        
+        prompt = "Want to keep searching?"
+        is_still_searching = utils.ask_continue(prompt) 
 
 
-# future work, a generic filter function
+
+# future work, a generic filter function`

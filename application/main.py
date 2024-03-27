@@ -10,6 +10,7 @@ def main():
     # search.search_by_author()
     #search.search_by_genre()
     #search.search_by_edited()
-    search.search_by_published()
+    #search.search_by_published()
+    search.search_by_rates()
 if __name__ == "__main__":
     main()
