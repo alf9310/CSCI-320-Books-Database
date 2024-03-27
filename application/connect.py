@@ -31,7 +31,6 @@ def test_connection() -> None:
 
 
 def execute_query(query: str) -> list:
-    # try:
     with SSHTunnelForwarder(('starbug.cs.rit.edu', 22),
                             ssh_username=USERNAME,
                             ssh_password=PASSWORD,
@@ -55,7 +54,4 @@ def execute_query(query: str) -> list:
         record = curs.fetchall()
 
         return record;
-    # except:
-    #     print("Connection failed")
-
-   
+    # errors not caught
