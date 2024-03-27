@@ -7,6 +7,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy import MetaData
 
 from users import Users
+from friend import Friend
 
 load_dotenv()
 
@@ -49,13 +50,17 @@ try:
         print(metadata.tables['users'].columns)  # Print table structure for 'users' table
         '''
 
+        Friend.friend_user(session)
+
         # ----------------Testing User usage----------------
+        '''
         users = session.query(Users).all()
         for user in users:
             print(user)
-        print()
+        print()'''
 
         # Create a user
+        """
         new_user = Users.create(session, first_name = "John", last_name = "Doe", username = "123JohnnyBoy", password = "password123")
 
         # Query users with the first name John
@@ -91,7 +96,7 @@ try:
         print(total_count, "Users with the last name Smith")
         for result in results:
             print(result)
-        print()
+        print()"""
 
         session.close()
 
