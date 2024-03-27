@@ -6,7 +6,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import MetaData
 
-#from user import User
+from users import Users
 
 load_dotenv()
 
@@ -41,53 +41,59 @@ try:
         Session = sessionmaker(bind=engine)
         session = Session()
 
-        # Check user columns
+        '''
+        # Check user columns in database
         metadata = MetaData()
         metadata.reflect(bind=engine) 
         print(metadata.tables.keys())  # Print table names
         print(metadata.tables['users'].columns)  # Print table structure for 'users' table
-
         '''
-        # Use the session to interact with the database using SQLAlchemy
+
         # ----------------Testing User usage----------------
+        users = session.query(Users).all()
+        for user in users:
+            print(user)
+        print()
 
         # Create a user
-        new_user = User.create(session, 1000000, "John", "Doe", "JohnnyBoy", "password123")
+        new_user = Users.create(session, first_name = "John", last_name = "Doe", username = "123JohnnyBoy", password = "password123")
 
-        # Query users
-        # Call the search method with the provided session and first_name parameter
-        results, total_count = User.search(session, {}, first_name="John")
+        # Query users with the first name John
+        results, total_count = Users.search(session, first_name="John")
+        print(total_count, "Users with the first name John")
+        for result in results:
+            print(result)
+        print()
 
-        # Print the results
-        for user in results:
-            print(user.first_name, user.last_name)
+        # Query users with the last name Smith
+        results, total_count = Users.search(session, last_name="Smith")
+        print(total_count, "Users with the last name Smith")
+        for result in results:
+            print(result)
+        print()
 
         # Update a user
         new_user.last_name = "Smith"
-        new_user.save()
+        new_user.save(session)
+
+        # Query users with the last name Smith
+        results, total_count = Users.search(session, last_name="Smith")
+        print(total_count, "Users with the last name Smith")
+        for result in results:
+            print(result)
+        print()
 
         # Delete a user
-        new_user.delete()
+        new_user.delete(session)
 
-        # Call the search method with the provided session and first_name parameter
-        results, total_count = User.search(session, {}, first_name="John")
+        # Query users with the last name Smith
+        results, total_count = Users.search(session, last_name="Smith")
+        print(total_count, "Users with the last name Smith")
+        for result in results:
+            print(result)
+        print()
 
-        # Print the results
-        for user in results:
-            print(user.first_name, user.last_name)
-        '''
+        session.close()
 
-        # # database work
-
-        # postgreSQL_select_Query = "select * from ryan_ong_table"
-
-        # curs.execute(postgreSQL_select_Query)
-        # print("Selecting rows from mobile table using curs.fetchall")
-        # mobile_records = curs.fetchall()
-
-        # print("Print each row and it's columns values")
-        # for row in mobile_records:
-        #     print("test = ", row[0])
-        # conn.close()
 except:
     print("Connection failed")
