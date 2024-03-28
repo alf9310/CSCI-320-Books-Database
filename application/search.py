@@ -1,4 +1,4 @@
-import connect
+import application.connect as connect
 import utils
 
 def search_by_title() -> None:

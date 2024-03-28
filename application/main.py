@@ -1,4 +1,4 @@
-import connect
+import application.connect as connect
 import search
 
 def main():
