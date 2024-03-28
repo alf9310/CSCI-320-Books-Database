@@ -217,16 +217,16 @@ def search_by_rates() -> None:
         # select all common bids, average their rating, then 
         # select all average bid that is closest to the inputted number
         query_statement = f"\
-            SELECT book.title, rates.rating \
+            SELECT book.title, AVG(rates.rating) AS average_rating \
             FROM book \
-            INNER JOIN rates \
-            ON book.bid = rates.rating \
-            WHERE rates.rating <= {rating} \
-            ORDER BY rates.rating"
+            JOIN rates ON book.bid = rates.bid \
+            GROUP BY book.bid \
+            ORDER BY ABS(AVG(rates.rating) - {rating}) \
+            LIMIT 15"
         query_results = connect.execute_query(query_statement) 
         if query_results: 
             for results in query_results:
-                print(f'{results[1]}:  {results[0]}')
+                print(f'{results[1]:.1f}:  {results[0]}')
         else:
             print("No results")
         

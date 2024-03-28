@@ -53,5 +53,5 @@ def execute_query(query: str) -> list:
         curs.execute(postgreSQL_select_Query)
         record = curs.fetchall()
 
-        return record;
+        return record
     # errors not caught
