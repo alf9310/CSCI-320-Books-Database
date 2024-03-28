@@ -28,56 +28,42 @@ class Friend(Base):
     '''
     
     @classmethod
-    def friend_user(cls, session):
-        # This section will need to be changed once login is done
-        current = input("What is your username? ")
-        try:
-            curresult, curcount = Users.search(session, username=current)
-            userID = curresult[0].uid
-            friending = True
+    def friend_user(cls, session, uid):
+        # Need to update to allow search by email
+        friending = True
         
-            while(friending):
-                friending = input("Who do you want to friend? ")
-                try:
-                    friendResult, fcount = Users.search(session, username=friending)
-                    reply = input("Do you want to friend " + friendResult[0].username + "? [Y/N] ")
-                    if(reply == "Y" or reply == "YES"):
-                        new_friend = cls(uid = curresult[0].uid, friend_id = friendResult[0].uid)
-                        session.add(new_friend)
-                        session.commit()
-                        print("Friended " + friendResult[0].username + "!")
-                except IntegrityError as e:
-                    print("Already friends with user!")
-                except Exception as e:
-                    print("User does not exist!")
-                again = input("Do you want to friend someone else? [Y/N] ")
-                if(again=="N" or again=="NO"):
-                    friending = False
-        except Exception as e:
-            print("User does not exist!")
+        while(friending):
+            friending = input("Who do you want to friend? ")
+            try:
+                friendResult, fcount = Users.search(session, username=friending)
+                reply = input("Do you want to friend " + friendResult[0].username + "? [Y/N] ")
+                if(reply == "Y" or reply == "YES"):
+                    new_friend = cls(uid = uid, friend_id = friendResult[0].uid)
+                    session.add(new_friend)
+                    session.commit()
+                    print("Friended " + friendResult[0].username + "!")
+            except IntegrityError as e:
+                print("Already friends with user!")
+            except Exception as e:
+                print("User does not exist!")
+            again = input("Do you want to friend someone else? [Y/N] ")
+            if(again=="N" or again=="NO"):
+                friending = False
 
     @classmethod
-    def unfriend(cls, session):
-        question = input("What is your username? ")
+    def unfriend(cls, session, uid):
+        unfriending = input("Who would you like to unfriend? ")
         try:
-            curresult, curcount = Users.search(session, username=question)
-            userID = curresult[0].uid
-            
-            unfriending = input("Who would you like to unfriend? ")
-            try:
-                friendresult, fcount = Users.search(session, username=unfriending)
-                fid = friendresult[0].uid
+            friendresult, fcount = Users.search(session, username=unfriending)
+            fid = friendresult[0].uid
+            confirm = input("Do you wish to unfriend " + friendresult[0].username + " ? [Y/N] ")
+            if(confirm == "Y" or confirm == "YES"):
+                query = session.query(Friend)
+                query = query.filter(Friend.uid == uid)
+                query = query.filter(Friend.friend_id == fid)
 
-                confirm = input("Do you wish to unfriend " + friendresult[0].username + " ? [Y/N] ")
-                if(confirm == "Y" or confirm == "YES"):
-                    query = session.query(Friend)
-                    query = query.filter(Friend.uid == userID)
-                    query = query.filter(Friend.friend_id == fid)
-
-                    session.delete(query[0])
-                    session.commit()
-            except Exception as e:
-                print(e)
-                print("User does not exist!")
+                session.delete(query[0])
+                session.commit()
         except Exception as e:
+            #print(e)
             print("User does not exist!")

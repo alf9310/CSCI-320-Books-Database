@@ -2,6 +2,7 @@ import connect
 import utils
 import search
 from users import Users
+from friend import Friend
 
 def main():
     print("---------------BadReads Application Started---------------")
@@ -23,6 +24,7 @@ def main():
             results, total_count = Users.search(session, username = username, password = password)
         current_user = results[0]
         current_user.save(session) # Updates last_accessed
+        Friend.unfriend(session, current_user.uid)
         print("Login sucessful")
     # Create a new user
     else:
