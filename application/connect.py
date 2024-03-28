@@ -4,7 +4,6 @@ from sshtunnel import SSHTunnelForwarder
 from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from users import Users
 
 load_dotenv()
 
@@ -55,12 +54,7 @@ def test_connection():
     server = create_ssh_tunnel()
     if server:
         session = create_database_session(server)
-        if session:
-            users = session.query(Users).all()
-            for user in users:
-                print(user)
-            print()
-            return session
+        return session
     return None
 
 def execute_query(query: str) -> list:

@@ -60,7 +60,7 @@ class Users(Base):
     Order by order_by and can limit the number of results returned with limit.
     '''
     @classmethod
-    def search(cls, session, uid=None, first_name=None, last_name=None, username=None, order_by=None, limit=None):
+    def search(cls, session, uid=None, first_name=None, last_name=None, username=None, password=None, order_by=None, limit=None):
         query = session.query(Users)
 
         if uid:
@@ -71,6 +71,8 @@ class Users(Base):
             query = query.filter(Users.last_name.ilike(f"%{last_name}%"))
         if username:
             query = query.filter(Users.username.ilike(f"%{username}%"))
+        if password:
+            query = query.filter(Users.password.ilike(f"%{password}%"))
 
         total_count = query.count()
 
