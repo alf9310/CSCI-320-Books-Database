@@ -4,11 +4,7 @@ import book_search
 from users import Users
 from friend import Friend
 
-def main():
-    print("---------------BadReads Application Started---------------")
-    # Connect to the database
-    session = connect.test_connection()
-
+def login(session):
     returning = utils.ask_continue("Are you a returning user?")
     print()
     # Login with existing user
@@ -24,7 +20,6 @@ def main():
             results, total_count = Users.search(session, username = username, password = password)
         current_user = results[0]
         current_user.save(session) # Updates last_accessed
-        Friend.unfriend(session, current_user.uid)
         print("Login sucessful")
     # Create a new user
     else:
@@ -41,6 +36,120 @@ def main():
         email = input("Email: ")
         current_user = Users.create(session, first_name = first_name, last_name = last_name, username = username, password = password, email = email)
         print("User creation sucessful")
+    # TODO users can loop back to start of function from login & create new user
+    # TODO add quit option
+    return current_user
+
+def home_page(session, current_user):
+    print("\n---------------Home Page---------------")
+    print("Find Books")
+    print("View Collections")
+    print("View Book Logs")
+    print("View Friends")
+    print("Settings")
+    print("Log Out")
+    input = utils.get_input_str("-> ")
+    print()
+    match input:
+        case "Find Books":
+            find_books()
+        case "View Collections":
+            view_collections(session, current_user)
+        case "View Book Logs":
+            view_book_logs(session, current_user)
+        case "View Friends":
+            view_friends(session, current_user)
+        case "Settings":
+            settings(session, current_user)
+        case "Log Out":
+            print("You have been logged out\n")
+            login(session)
+        case _:
+            print("Invalid input, please enter either " + 
+                  "\'Find Books\', \'View Collections\', \'View Book Logs\', \'View Friends\', \'Settings\' or \'Log Out\'")
+
+def find_books():
+    "---------------Find Books---------------"
+    print("What would you like to search for books by? Options:")
+    print("Title")
+    print("Length")
+    print("Minimum Recommended Age")
+    print("Maximum Recommended Age")
+    print("Author")
+    print("Publisher")
+    print("Editor")
+    print("Genre")
+    print("Rating")
+    input = utils.get_input_str("-> ")
+    print()
+    match input:
+        case "Title":
+            search.search_by_title()
+        case "Length":
+            search.search_by_length()
+        case "Minimum Recommended Age":
+            search.search_by_min_age()
+        case "Maximum Recommended Age":
+            search.search_by_max_age()
+        case "Author":
+            search.search_by_author()
+        case "Publisher":
+            search.search_by_published()
+        case "Editor":
+            search.search_by_edited()
+        case "Genre":
+            search.search_by_genre()
+        case "Rating":
+            search.search_by_rates()
+        case _:
+            print("Invalid input, please enter either " + 
+                  "\'Find Books\', \'View Collections\', \'View Book Logs\', \'View Friends\' or \'Settings\'")
+    # TODO better print format for books 
+    # TODO add book view where users can add to collection, add to log, or rate
+    return
+
+def view_collections(session, current_user):
+    #TODO Search collections by the current user's uid, sort by name in ascending order
+    #TODO Show Collections name, Number of books in the collection, Total length of the books (in pages) in the collection
+    #TODO Here users can create a new collection, modify the name of a collection & delete an entire collection
+    #TODO Collection view, where users can add and delete books from their collection
+    #TODO add book view where users can add to current collection, add to log, or rate
+    return
+
+def view_book_logs(session, current_user):
+    #TODO Search logs by the current user's uid, sort by most recent
+    #TODO add book view where users can add to collection, add to log, or rate
+    return
+
+def view_friends(session, current_user):
+    #TODO Search friends by the current user's uid
+    print("Would you like to Friend or Unfriend a user?")
+    input = utils.get_input_str("-> ")
+    print()
+    match input:
+        case "Friend":
+            Friend.friend_user(session, current_user.uid)
+        case "Unfriend":
+            Friend.unfriend(session, current_user.uid)
+        case _:
+            print("Invalid input, please enter either \'Friend\' or \'Unfriend\'")
+    return
+
+def settings(session, current_user):
+    #TODO users can change email, username, password, etc. or delete account
+    return
+
+def main():
+    print("---------------BadReads Application Started---------------")
+    # Connect to the database
+    session = connect.test_connection()
+
+    # Login or create a new account, save current user
+    current_user = login(session)
+
+    # Home Page
+    print("Welcome to BadReads " + current_user.username + "!")
+    home_page(session, current_user)
         
 
     # ----------------Testing User usage----------------
