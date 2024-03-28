@@ -12,7 +12,7 @@ class Users(Base):
     Defines Users
     '''
     __tablename__ = 'users'
-    uid = Column(Integer, primary_key=True) #unique=True) #TODO make sure this is generating unique instances
+    uid = Column(Integer, primary_key=True) 
     username = Column(String)
     password = Column(String)
     first_name = Column(String)
