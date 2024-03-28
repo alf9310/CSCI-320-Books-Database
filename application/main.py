@@ -101,7 +101,8 @@ def main():
     #search.search_by_genre()
     #search.search_by_edited()
     #search.search_by_published()
-    book_search.search_release_date() 
+    # book_search.search_release_date()
+    book_search.search_format()
     session.close()
 
 if __name__ == "__main__":

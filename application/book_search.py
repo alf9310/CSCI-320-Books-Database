@@ -248,7 +248,7 @@ def search_release_date() -> None:
             FROM book \
             JOIN released_as \
             ON book.bid = released_as.bid \
-            WHERE  DATE(released_as.date) = '{release_date}'"
+            WHERE DATE(released_as.date) = '{release_date}'"
         query_results = connect.execute_query(query_statement) 
         if query_results: 
             for results in query_results:
@@ -261,6 +261,29 @@ def search_release_date() -> None:
 
 
 def search_format() -> None:
-    print("get format")
+    is_still_searching = True
+    while(is_still_searching):
+        format = utils.get_input_str("What book format are you looking for? [article/paperback/hardcover/magazine/e-book]\n-> ") 
+        print(f'Your search was, {format}\n')
+
+        # get the release date then order based on alphabetical
+        query_statement = f"\
+            SELECT book.title, format.format_name \
+            FROM book \
+            JOIN released_as \
+            ON book.bid = released_as.bid \
+            INNER JOIN format \
+            ON released_as.fid = format.fid \
+            WHERE format.format_name ILIKE '%{format}%'"
+        query_results = connect.execute_query(query_statement) 
+        if query_results: 
+            for results in query_results:
+                print(f'{results[1]}:  {results[0]}')
+        else:
+            print("No results")
+        
+        prompt = "Want to keep searching?"
+        is_still_searching = utils.ask_continue(prompt) 
+
    
 # future work, a generic filter function`
