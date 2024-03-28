@@ -1,6 +1,6 @@
 import connect
 import utils
-import search
+import book_search
 from users import Users
 from friend import Friend
 
