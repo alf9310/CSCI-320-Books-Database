@@ -55,3 +55,29 @@ class Friend(Base):
                     friending = False
         except Exception as e:
             print("User does not exist!")
+
+    @classmethod
+    def unfriend(cls, session):
+        question = input("What is your username? ")
+        try:
+            curresult, curcount = Users.search(session, username=question)
+            userID = curresult[0].uid
+            
+            unfriending = input("Who would you like to unfriend? ")
+            try:
+                friendresult, fcount = Users.search(session, username=unfriending)
+                fid = friendresult[0].uid
+
+                confirm = input("Do you wish to unfriend " + friendresult[0].username + " ? [Y/N] ")
+                if(confirm == "Y" or confirm == "YES"):
+                    query = session.query(Friend)
+                    query = query.filter(Friend.uid == userID)
+                    query = query.filter(Friend.friend_id == fid)
+
+                    session.delete(query[0])
+                    session.commit()
+            except Exception as e:
+                print(e)
+                print("User does not exist!")
+        except Exception as e:
+            print("User does not exist!")
