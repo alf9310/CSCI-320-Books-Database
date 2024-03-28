@@ -98,7 +98,7 @@ def search_by_max_age():
 def search_by_author() -> None:
     is_still_searching = True
     while(is_still_searching):
-        author_name = utils.get_input_str("What is/are the book(s) by some author that you are looking for?\n-> ")
+        author_name = utils.get_input_str("What wrote the book(s) you are looking for?\n-> ")
         
         print(f'Your search was, {author_name}\n')
 
@@ -125,15 +125,114 @@ def search_by_author() -> None:
      
 
 def search_by_published() -> None:
-    print("get published")
+    is_still_searching = True
+    while(is_still_searching):
+        publisher_name = utils.get_input_str("Who published the book(s) you are looking for?\n-> ")
+        
+        print(f'Your search was, {publisher_name}\n')
+
+        query_statement = f"\
+            SELECT book.title, person.person_name \
+            FROM book \
+            INNER JOIN published_by \
+            ON book.bid = published_by.bid \
+            INNER JOIN person \
+            ON person.pid = published_by.pid \
+            WHERE person_name ILIKE '%{publisher_name}%' \
+            ORDER BY person_name"
+        query_results = connect.execute_query(query_statement) 
+        if query_results: 
+            for results in query_results:
+                print(f'{results[0]} edited by {results[1]}')
+        else:
+            print("No results")
+        
+        prompt = "Want to keep searching?"
+        is_still_searching = utils.ask_continue(prompt) 
 
 
+def search_by_edited() -> None:
+    is_still_searching = True
+    while(is_still_searching):
+        editor_name = utils.get_input_str("Who edited the book(s) you are looking for?\n-> ")
+        
+        print(f'Your search was, {editor_name}\n')
+
+        query_statement = f"\
+            SELECT book.title, person.person_name \
+            FROM book \
+            INNER JOIN edited_by \
+            ON book.bid = edited_by.bid \
+            INNER JOIN person \
+            ON person.pid = edited_by.pid \
+            WHERE person_name ILIKE '%{editor_name}%' \
+            ORDER BY person_name"
+        query_results = connect.execute_query(query_statement) 
+        if query_results: 
+            for results in query_results:
+                print(f'{results[0]} edited by {results[1]}')
+        else:
+            print("No results")
+        
+        prompt = "Want to keep searching?"
+        is_still_searching = utils.ask_continue(prompt) 
+
+
+# future work, make this able to take in a list? 
 def search_by_genre() -> None:
-    print("search genre")
+    is_still_searching = True
+    while(is_still_searching):
+        genre = utils.get_input_str("What is a book genre you are lookiing for?\n-> ")
+        
+        print(f'Your search was, {genre}\n')
+
+        query_statement = f"\
+            SELECT book.title, genre.genre_name \
+            FROM book \
+            INNER JOIN has_genre \
+            ON book.bid = has_genre.bid \
+            INNER JOIN genre \
+            ON genre.gid = has_genre.gid \
+            WHERE genre.genre_name ILIKE '%{genre}%' \
+            ORDER BY genre.genre_name"
+        query_results = connect.execute_query(query_statement) 
+        if query_results: 
+            for results in query_results:
+                print(f'{results[1]}:  {results[0]}')
+        else:
+            print("No results")
+        
+        prompt = "Want to keep searching?"
+        is_still_searching = utils.ask_continue(prompt) 
 
 
 def search_by_rates() -> None:
-    print("search rates")
+    is_still_searching = True
+    while(is_still_searching):
+        rating = utils.get_input_str("What book rating are you looking for? [1, 2, 3, 4, 5]\n-> ")
+        
+        print(f'Your search was, {rating}\n')
+
+        # rates contains UID's and their ratings for certain book
+        # select all common bids, average their rating, then 
+        # select all average bid that is closest to the inputted number
+        query_statement = f"\
+            SELECT book.title, AVG(rates.rating) AS average_rating \
+            FROM book \
+            JOIN rates ON book.bid = rates.bid \
+            GROUP BY book.bid \
+            ORDER BY ABS(AVG(rates.rating) - {rating}) \
+            LIMIT 15"
+        query_results = connect.execute_query(query_statement) 
+        if query_results: 
+            for results in query_results:
+                print(f'{results[1]:.1f}:  {results[0]}')
+        else:
+            print("No results")
+        
+        prompt = "Want to keep searching?"
+        is_still_searching = utils.ask_continue(prompt) 
 
 
-# future work, a generic filter function
+
+# future work, a generic filter function`
