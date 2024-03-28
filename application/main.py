@@ -36,10 +36,8 @@ def main():
         password = input("Password: ")
         first_name = input("First Name: ")
         last_name = input("Last Name: ")
-        email = input("Email: ")                          #TODO impliment email saving
-        while(utils.ask_continue("Would you like to input another email?")):
-            email = input("Email: ")
-        current_user = Users.create(session, first_name = first_name, last_name = last_name, username = username, password = password)
+        email = input("Email: ")
+        current_user = Users.create(session, first_name = first_name, last_name = last_name, username = username, password = password, email = email)
         print("User creation sucessful")
         
 
