@@ -194,10 +194,21 @@ def view_collections(session, current_user):
 def view_book_logs(session, current_user):
     print()
     print("---------------View Book Logs---------------")
+    #TODO Search logs by the current user's uid, sort by most recent
     # display all the logs this user currently has
     Log.listLogs(session, current_user.uid)
-    
-    #TODO Search logs by the current user's uid, sort by most recent
+    print()
+    user_in = utils.ask_continue("Would you like to record a new log?")
+    if user_in:
+        # add to LOG
+        title = utils.get_input_str("What book would you like to log?\n-> ")
+        print("adding to log")
+        bookID = (session.query(Book).filter_by(title=title).order_by(Book.title).first()).bid
+        start_time = utils.get_input_str("start time?\n-> ")
+        end_time = utils.get_input_str("end time?\n-> ")
+        start_page = utils.get_input_int("start page?\n-> ")
+        end_page = utils.get_input_int("end page?\n-> ")
+        Log.create(session, bookID, current_user.uid, start_time, end_time, start_page, end_page)
     #TODO add book view where users can add to collection, add to log, or rate
     return
 
