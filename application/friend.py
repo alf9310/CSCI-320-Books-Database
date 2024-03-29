@@ -96,3 +96,15 @@ class Friend(Base):
         except Exception as e:
             #print(e)
             print("User does not exist!")
+
+    def listFriends(session, uid):
+        query = session.query(Friend)
+        query = query.filter(Friend.uid == uid)
+
+        count = query.count()
+        if(count == 0):
+            print("You don't follow anyone!")
+        else:
+            for entry in query:
+                friendName, fcount = Users.search(session, uid=entry.friend_id)
+                print(friendName[0].username)
