@@ -1,6 +1,5 @@
 import connect
 import utils
-import search
 from users import Users
 from friend import Friend
 from book import Book
@@ -99,99 +98,85 @@ def find_books(session, current_user, query = None):
         case "Title":
             print("Enter Book Title")
             title = utils.get_input_str("-> ")
-            results, total_count = Book.search(session, title=title, query=query)
+            query, total_count = Book.search(session, title=title, order_by="title", query=query)
             print(total_count, "Books found")
-            for result in results:
+            for result in query:
                 print(result)
+                print()
             cont = utils.ask_continue("Would you like to filter this list?")
             if cont:
+                print("Filtering List")
                 find_books(session, current_user, query = query)
+            else:
+                find_books(session, current_user)
         case "Release Date":
-            pass #TODO
+            print("Enter Book Minimum Release Date")
+            min_release_date = utils.get_input_str("-> ")
+            print("Enter Book Maximum Release Date")
+            max_release_date = utils.get_input_str("-> ")
+            query, total_count = Book.search(session, release_date=[min_release_date, max_release_date], order_by="title", query=query)
+            print(total_count, "Books found")
+            for result in query:
+                print(result)
+                print()
+            cont = utils.ask_continue("Would you like to filter this list?")
+            if cont:
+                print("Filtering List")
+                find_books(session, current_user, query = query)
+            else:
+                find_books(session, current_user)
         case "Author":
             print("Enter Book Author")
             author = utils.get_input_str("-> ")
-            results, total_count = Book.search(session, author=author, query=query)
+            query, total_count = Book.search(session, author=author, order_by="title", query=query)
             print(total_count, "Books found")
-            for result in results:
+            for result in query:
                 print(result)
+                print()
             cont = utils.ask_continue("Would you like to filter this list?")
             if cont:
+                print("Filtering List")
                 find_books(session, current_user, query = query)
+            else:
+                find_books(session, current_user)
         case "Publisher":
             print("Enter Book Publisher")
             publisher = utils.get_input_str("-> ")
-            results, total_count = Book.search(session, publisher=publisher, query=query)
+            query, total_count = Book.search(session, publisher=publisher, order_by="title", query=query)
             print(total_count, "Books found")
-            for result in results:
+            for result in query:
                 print(result)
+                print()
             cont = utils.ask_continue("Would you like to filter this list?")
             if cont:
+                print("Filtering List")
                 find_books(session, current_user, query = query)
+            else:
+                find_books(session, current_user)
         case "Genre":
             print("Enter Book Genre")
             genre = utils.get_input_str("-> ")
-            results, total_count = Book.search(session, genre=genre, query=query)
+            query, total_count = Book.search(session, genre=genre, order_by="title", query=query)
             print(total_count, "Books found")
-            for result in results:
+            for result in query:
                 print(result)
+                print()
             cont = utils.ask_continue("Would you like to filter this list?")
             if cont:
+                print("Filtering List")
                 find_books(session, current_user, query = query)
+            else:
+                find_books(session, current_user)
         case "Home Page":
-            home_page(session, current_user)
+            return
         case _:
             print("Invalid input, please enter either " + 
                   "\'Title\', \'Release Date\', \'Author\', \'Publisher\', \'Genre\' or \'Home Page\'")
 
-        
-    '''
-    # Old find_books
-    print()
-    print("---------------Find Books---------------")
-    print("What would you like to search for books by? Options:")
-    print("Title")
-    print("Length")
-    print("Minimum Recommended Age")
-    print("Maximum Recommended Age")
-    print("Author")
-    print("Publisher")
-    print("Editor")
-    print("Genre")
-    print("Rating")
-    print("Home Page")
-    # TODO search by release date
-    input = utils.get_input_str("-> ")
-    print()
-    match input:
-        case "Title":
-            search.search_by_title()
-        case "Length":
-            search.search_by_length()
-        case "Minimum Recommended Age":
-            search.search_by_min_age()
-        case "Maximum Recommended Age":
-            search.search_by_max_age()
-        case "Author":
-            search.search_by_author()
-        case "Publisher":
-            search.search_by_published()
-        case "Editor":
-            search.search_by_edited()
-        case "Genre":
-            search.search_by_genre()
-        case "Rating":
-            search.search_by_rates()
-        case "Home Page":
-            home_page(session, current_user)
-        case _:
-            print("Invalid input, please enter either " + 
-                  "\'Find Books\', \'View Collections\', \'View Book Logs\' or \'View Friends\'")
-    # TODO better print format for books. Label books name, the authors, the publisher, the length, audience and the ratings
+    # TODO books need to show ratings
     # TODO The list must be sorted alphabetically (ascending) by books name and release date. 
     # TODO Users can sort the resulting list: book name, publisher, genre, and released year (ascending and descending)
     # TODO Not nessesary, bould would be nice to add book view where users can add to collection, add to log, or rate
-    '''
     return
 
 def view_collections(session, current_user):

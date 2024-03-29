@@ -5,6 +5,7 @@ from sqlalchemy.sql.expression import func
 from sqlalchemy import text
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
+from sqlalchemy import and_
 
 
 from log_book import Log
@@ -73,6 +74,7 @@ class Book(Base):
     '''
     @classmethod
     def search(cls, session, query=None, bid=None, title=None, release_date=None, author=None, publisher=None, genre=None, order_by=None, limit=None):
+        # TODO order by nama alphabetically by default
         if query is None:
             query = session.query(Book)
 
@@ -81,7 +83,9 @@ class Book(Base):
         if title:
             query = query.filter(Book.title.ilike(f"%{title}%"))
         if release_date:
-            pass # TODO
+            min_release_date, max_release_date = release_date
+            # Join with ReleasedAs table to access the release date
+            query = query.join(ReleasedAs).filter(and_(ReleasedAs.date >= min_release_date, ReleasedAs.date <= max_release_date))
         if author:
             # Join the WrittenBy and Person tables to filter by author
             query = query.join(WrittenBy).join(Person).filter(Person.person_name.ilike(f"%{author}%"))
