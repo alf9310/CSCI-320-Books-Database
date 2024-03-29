@@ -139,7 +139,7 @@ def find_books(session, current_user, query = None):
             if cont:
                 find_books(session, current_user, query = query)
         case "Home Page":
-            home_page(session, current_user)
+            return
         case _:
             print("Invalid input, please enter either " + 
                   "\'Title\', \'Release Date\', \'Author\', \'Publisher\', \'Genre\' or \'Home Page\'")
