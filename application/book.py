@@ -24,6 +24,7 @@ class Book(Base):
     written_by = relationship("WrittenBy", back_populates="book")
     published_by = relationship("PublishedBy", back_populates="book")
     edited_by = relationship("EditedBy", back_populates="book")
+    has_genre = relationship("HasGenre", back_populates="book")
     released_formats = relationship("ReleasedAs", back_populates="book")
 
     '''
@@ -67,8 +68,9 @@ class Book(Base):
     Order by order_by and can limit the number of results returned with limit.
     '''
     @classmethod
-    def search(cls, session, bid=None, title=None, release_date=None, author=None, publisher=None, genre=None, order_by=None, limit=None):
-        query = session.query(Book)
+    def search(cls, session, query=None, bid=None, title=None, release_date=None, author=None, publisher=None, genre=None, order_by=None, limit=None):
+        if query is None:
+            query = session.query(Book)
 
         if bid:
             query = query.filter(Book.bid == bid)
