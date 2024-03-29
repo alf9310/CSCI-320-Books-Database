@@ -3,6 +3,7 @@ import utils
 from users import Users
 from friend import Friend
 from book import Book
+from rating import Rates
 
 def login(session):
     print()
@@ -57,6 +58,7 @@ def home_page(session, current_user):
     print("View Collections")
     print("View Book Logs")
     print("View Friends")
+    print("Rate Books")
     print("Log Out")
     input = utils.get_input_str("-> ")
     print()
@@ -72,6 +74,9 @@ def home_page(session, current_user):
             home_page(session, current_user)
         case "View Friends":
             view_friends(session, current_user)
+            home_page(session, current_user)
+        case "Rate Books":
+            rate_book(session, current_user)
             home_page(session, current_user)
         case "Log Out":
             print("You have been logged out\n")
@@ -241,6 +246,87 @@ def view_friends(session, current_user):
             print("Invalid input, please enter either \'Friend\', \'Unfriend\' or \'Home Page\'")
             view_friends(session, current_user)
     return
+
+def rate_book(session, current_user):
+    print()
+    print("---------------Rate Books---------------")
+    print()
+    print("Would you like to Rate Book or View Ratings? ")
+    first_input = utils.get_input_str("-> ")
+    match first_input:
+        case "Rate Book":
+            print("Select book you would like to rate")
+            input = utils.get_input_str("-> ")
+            try:
+                book_id = (session.query(Book).filter_by(title=input).order_by(Book.title).first()).bid
+            except Exception as e:
+                print("Invalid Book Title")
+                session.rollback()
+                return
+            user_id = (current_user.uid)
+            results, total_count = Rates.search(session, uid=user_id, bid=book_id)
+            if(total_count > 0):
+                print("You have given", input, "a rating of", results.first().rating)
+                print("Would you like to change rating? (y/n)")
+                new_input = utils.get_input_str("-> ")
+                match new_input:
+                    case "y":
+                        try:
+                            changed_rating = utils.get_input_str("rating (1-5)? ")
+                            new_rating_int = int(changed_rating)
+                        except Exception as e:
+                            print("Invalid Rating")
+                            return
+                        Rates.change_rating(session, user_id, book_id, new_rating_int)
+                        return
+                    case "n":
+                        return
+                    case _:
+                        return
+                return
+            else:
+                try:
+                    rating = utils.get_input_str("rating (1-5)? ")
+                    rating_int = int(rating)
+                except Exception as e:
+                    print("Invalid Rating")
+                    return
+                Rates.create(session, user_id, book_id, rating_int)
+                return
+        case "View Ratings":
+            Rates.rating_view(session, current_user.uid)
+            return
+        case _:
+            print("Invalid input")
+            return
+        
+
+    print("Select book you would like to rate")
+    input = utils.get_input_str("-> ")
+    book_id = (session.query(Book).filter_by(title=input).order_by(Book.title).first()).bid
+    user_id = (current_user.uid)
+    results, total_count = Rates.search(session, uid=user_id, bid=book_id)
+    if(total_count > 0):
+        print("You have given", input, "a rating of", results.first().rating)
+        print("Would you like to change rating? (y/n)")
+        new_input = utils.get_input_str("-> ")
+        match new_input:
+            case "y":
+                changed_rating = utils.get_input_str("rating? ")
+                new_rating_int = int(changed_rating)
+                Rates.change_rating(session, user_id, book_id, new_rating_int)
+                return
+            case "n":
+                return
+            case _:
+                return
+        return
+    else:
+        rating = utils.get_input_str("rating? ")
+        rating_int = int(rating)
+        Rates.create(session, user_id, book_id, rating_int)
+        return
+    
 
 def main():
     print("---------------BadReads Application Started---------------")
