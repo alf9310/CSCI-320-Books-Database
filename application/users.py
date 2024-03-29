@@ -1,8 +1,6 @@
-from sqlalchemy import create_engine, Column, Integer, String, DateTime
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.orm import declarative_base
 from datetime import datetime
-from typing import Union
 from sqlalchemy.sql.expression import func
 from sqlalchemy.orm import relationship
 

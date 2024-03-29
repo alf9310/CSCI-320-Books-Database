@@ -1,11 +1,10 @@
 from math import ceil
 from book import Book
 from users import Users
-from sqlalchemy import create_engine, Column, Integer, String, DateTime, ForeignKey
-from sqlalchemy.orm import sessionmaker
+from utils import ask_continue
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 from sqlalchemy.orm import declarative_base
 from datetime import datetime
-from typing import Union
 from sqlalchemy.sql.expression import func
 
 Base = declarative_base()
@@ -97,8 +96,8 @@ class In_Collection(Base):
     Defines In_Collection
     '''
     __tablename__ = 'in_collection'
-    cid = Column(Integer, ForeignKey("collection.cid"), primary_key=True)
-    bid = Column(Integer, ForeignKey("book.bid"), primary_key=True)
+    cid = Column(Integer, ForeignKey(Collection.cid), primary_key=True)
+    bid = Column(Integer, ForeignKey(Book.bid), primary_key=True)
     date_added = Column(DateTime, default=datetime.now)
 
     '''
@@ -137,11 +136,14 @@ class In_Collection(Base):
     Order by order_by and can limit the number of results returned with limit.
     '''
     @classmethod
-    def search(cls, session, cid=None, order_by=None, limit=None):
+    def search(cls, session, cid=None, bid=None, order_by=None, limit=None):
         query = session.query(In_Collection)
 
         if cid:
             query = query.filter(In_Collection.cid == cid)
+
+        if bid:
+            query = query.filter(In_Collection.bid == bid)
 
         total_count = query.count()
 
@@ -501,6 +503,90 @@ def view_collections(session, current_user):
                 if (create_collection(session, uid)):
                     results, count, max_page = refresh_collections(session, uid, per_page)
                     cur_page = 0
+
+            case "p":
+                if (cur_page > 0):
+                    cur_page -= 1
+
+            case "n":
+                if (cur_page < max_page):
+                    cur_page += 1
+            
+            case _:
+                print("Command not recognized.")
+
+def collection_prompt_add(session, current_user, current_book):
+     # Get all of this user's collections
+    uid = current_user.uid
+    per_page = 15
+    results, count, max_page = refresh_collections(session, uid, per_page)
+    cur_page = 0
+
+    if (count == 0):
+        print("Create a collection first!")
+        return
+
+    while (True):
+        
+        # Print the current page
+        print(f'Add "{current_book.title}" where?')
+        # Prints a page
+        # Starts at cur_page, then prints up to per_page entries
+        start_index = cur_page * per_page
+        for i in range(start_index, start_index + per_page):
+            if (i >= count):
+                break
+            print(f"{i+1}:\t{results[i].name}")
+
+        print(f"Page {cur_page + 1} of {max_page + 1}")
+
+        # Prompt for input
+        cmd = input(f'\nPlease enter your selection [h for help]\n-> ')
+        
+        # Handle numbers differently
+        if (cmd.isdigit()):
+
+            # convert to int
+            index = int(cmd) - 1
+
+            # ensure int is in range
+            if ( index < 0 or index >= count ):
+                print(f"Please select a value in the range [1, {count}].")
+                continue
+
+            # collect here!
+
+            # grab that collection
+            selection = results[index]
+
+            # book already in collection?
+            q2, c2 = In_Collection.search(session=session, cid=selection.cid, bid=current_book.bid)
+            if (c2 > 0):
+                print(f'"{current_book.title}" is already in "{selection.name}"!')
+                continue
+
+            # ok ok prompt for confirmation
+            if (ask_continue(f'Add "{current_book.title}" to "{selection.name}"?')):
+                in_instance = In_Collection.create(session, cid=selection.cid, bid=current_book.bid)
+        
+                in_instance.save(session)
+
+                print(f'Added successfully!')
+                return
+
+            continue
+
+        match cmd:
+            case "h":
+                print("--- LIST OF COMMANDS ---")
+                print("'h' - show the currently available commands")
+                print("'q' - return to the previous page")
+                print("'n' - view the next page")
+                print("'p' - view the previous page")
+                print("Type a number to select that collection")
+
+            case "q":
+                return False
 
             case "p":
                 if (cur_page > 0):
