@@ -190,9 +190,6 @@ def results_view(session, current_user, query, count):
                         print(f"Please select a value in the range [1, 2].")
                 query, count = Book.search(session, query = query, order_by=order_by, descending=descending)
 
-                # Ensure distinct results
-                # query = query.distinct()
-
                 # also sets the current page back to 0 >:]
                 cur_page = 0
                 print_search_flag = True

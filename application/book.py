@@ -5,6 +5,7 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy import and_
 from sqlalchemy import desc
+from sqlalchemy.sql import text
 from users import Base as UserBase, Users
 
 class Book(UserBase):
@@ -95,13 +96,22 @@ class Book(UserBase):
             # Join the HasGenre and Genre tables to filter by genre
             query = query.join(HasGenre).join(Genre).filter(Genre.genre_name.ilike(f"%{genre}%"))
 
+        if order_by and order_by in ["title", "publisher", "genre", "release_year"]:
+            # Determine the column to order by
+            column = getattr(cls, order_by)
+            print("Sorting by:", order_by)
+            print("Descending order:", descending)
+            if descending:
+                print("Applying descending order")
+                query = query.order_by(column.desc())
+            else:
+                print("Applying ascending order")
+                query = query.order_by(column)
+
+
         total_count = query.count()
-        if order_by:
-            if hasattr(Book, order_by):
-                if descending:
-                    query = query.order_by(getattr(Book, order_by).desc())
-                else:
-                    query = query.order_by(getattr(Book, order_by))
+
+
         if limit:
             query = query.limit(limit)
 
