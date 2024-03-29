@@ -23,7 +23,7 @@ def get_find_book_filter(prompt: str) -> bool:
         if user_in in valid_list: 
             break
         else:
-            print("Invalid input, please enter either " + 
+            print("\nInvalid input, please enter either " + 
                   "\'Title\', \'Release Date\', \'Author\', \'Publisher\', \'Genre\' or \'Home Page\'")
     return user_in
 

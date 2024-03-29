@@ -110,24 +110,26 @@ def results_view(session, current_user, query, count):
         print("No books found.\nTry a different search!")
         return
 
-    
-    # Print the current page
-    print("--- SEARCH RESULTS ---")
-    print(count, "Books found")
-
-    # Prints a page
-    # Starts at cur_page, then prints up to per_page entries
-    start_index = cur_page * per_page
-    for i in range(start_index, start_index + per_page):
-        if (i >= count):
-            break
-        string_rep = query[i].__str__(session)
-        print(f"{i+1}:\t{string_rep}")
-        # TODO books need to show ratings
-
-    print(f"Page {cur_page + 1} of {max_page + 1}")
-    
+    print_search_flag = True
     while (True):
+        if print_search_flag:
+            # Print the current page
+            print("--- SEARCH RESULTS ---")
+            print(count, "Books found")
+
+            # Prints a page
+            # Starts at cur_page, then prints up to per_page entries
+            start_index = cur_page * per_page
+            for i in range(start_index, start_index + per_page):
+                if (i >= count):
+                    break
+                string_rep = query[i].__str__(session)
+                print(f"{i+1}:\t{string_rep}")
+                # TODO books need to show ratings
+
+            print(f"Page {cur_page + 1} of {max_page + 1}")
+            print_search_flag = False
+
         # Prompt for input
         cmd = input(f'\nPlease enter your command [h for help]\n-> ')
         
@@ -193,6 +195,7 @@ def results_view(session, current_user, query, count):
 
                 # also sets the current page back to 0 >:]
                 cur_page = 0
+                print_search_flag = True
                 continue
 
             case "c":
@@ -210,7 +213,7 @@ def results_view(session, current_user, query, count):
                     
                     #TODO: Add to collection function here!
                     collection_prompt_add(session, current_user, query[index])
-                    continue              
+                    continue
 
                 else:
                     print(f"Please select a value in the range [1, {count}].")
@@ -273,11 +276,11 @@ def results_view(session, current_user, query, count):
             case "p":
                 if (cur_page > 0):
                     cur_page -= 1
-
+                print_search_flag = True
             case "n":
                 if (cur_page < max_page):
                     cur_page += 1
-            
+                print_search_flag = True
             case _:
                 print("Command not recognized.")
 
