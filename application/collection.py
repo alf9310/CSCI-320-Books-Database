@@ -169,7 +169,7 @@ Function for creating a new collection.
 Prompts the user for the name of the collection.
 @param session - object for the current session
 @param uid - the ID of the currently logged in user
-@return True if successful, False if unsuccessful
+@return True if need to refresh, False if not
 '''
 def create_collection(session, uid):
     new_collection
@@ -185,17 +185,20 @@ def create_collection(session, uid):
         if (new_name == "q"):
             return False
         new_collection = Collection.create(session, name=new_name, uid=uid)
-        break
+        
+        new_collection.save(session)
 
-    new_collection.save(session)
-    return True
+        print(f'Collection "{new_name}" created successfully!')
+        return True
+
+    
 
 '''
 Function for renaming a collection.
 Prompts the user for the new name of the collection.
 @param session - object for the current session
 @param cid - the ID for the collection to rename
-@return True if successful, False if unsuccessful
+@return True if need to refresh, False if not
 '''
 def rename_collection(session, cid):
     results, count = Collection.search(cid=cid)
@@ -219,7 +222,35 @@ def rename_collection(session, cid):
         
         current.name = new_name
         current.save(session)
+
+        print(f'"{new_name}" updated successfully!')
         return True
+    
+'''
+Refreshes the search list for a user's collections.
+This will get called if a user has altered their collections
+in some way.
+@param uid - the ID for the user's account
+@return tuple of results (arr of Collection), count, page 1, max_page
+'''
+def refresh_collections(uid, per_page):
+    results, count = Collection.search(uid=uid, order_by="name")
+    max_page = ceil(count / per_page) - 1
+    return results, count, max_page
+
+
+def single_collection_view(session, cid):
+    results, count = Collection.search(cid=cid)
+
+    if (count != 1):
+        print("No collection found!")
+        return False
+    
+    current = results[0]
+
+    
+
+
 
 '''
 Function for selecting a collection.
@@ -227,37 +258,85 @@ Lists all of the collections owned by a user.
 Allows the user to flip thru the pages of collections.
 @param session - object for the current session
 @param uid - the ID for the user's account
-@return CID if successful, False if unsuccessful
+@return idk lol garbage ig
 '''
-def select_collection(session, uid):
-    results, count = Collection.search(uid=uid)
+def collection_view(session, uid):
+    per_page = 15
+    results, count, max_page = refresh_collections(uid, per_page)
+    cur_page = 0
 
     if (count == 0):
         print("No collections found!")
         return False
-    
-    per_page = 15
-    cur_page = 0
-    max_page = ceil(count / per_page)
-    
-    current = results[0]
 
     while (True):
         # Print the current page
         print("Your collections: ")
 
-        print(f"Page {cur_page + 1}")
+        # Prints a page
+        # Starts at cur_page, then prints up to per_page entries
+        start_index = cur_page * per_page
+        for i in range(start_index, start_index + per_page):
+            if (i >= count):
+                break
+            print(f"{i+1}:\t{results[i].name}")
 
-        new_name = input(f'Enter the new name for "{current.name}" [q to quit]')
-        if (new_name == ""):
-            print("Please enter a name.")
-            continue
-        if (len(new_name) > 50):
-            print("This name is too long!")
-            continue
-        if (new_name == "q"):
-            return False
+        print(f"Page {cur_page + 1} of {max_page + 1}")
+
+        # Prompt for input
+        cmd = input(f'Please enter your command [h for help]')
         
-        current.name = new_name
-        current.save(session)
-        return True
+        # Handle numbers differently
+        if (cmd.isdigit()):
+            
+            # convert to int
+            index = int(cmd) - 1
+
+            # ensure int is in range
+            if ( index < 0 or index >= count ):
+                print(f"Please select a value in the range [1, {count}].")
+                continue
+
+            # goto the single collection view
+            if(single_collection_view(session, results[index].cid)):
+                results, count, max_page = refresh_collections(uid, per_page)
+                cur_page = 0
+
+            continue
+
+        match cmd:
+            case "h":
+                print("--- LIST OF COMMANDS ---")
+                print("'h' - show the currently available commands")
+                print("'q' - return to the previous page")
+                print("'c' - create a new collection")
+                print("'n' - view the next page")
+                print("'p' - view the previous page")
+                print("Type a number to view that collection's details.")
+
+            case "q":
+                return False
+            
+            case "c":
+                # create_collection will prompt the user to create a new collection
+                # once they have created a collection, the program will return here.
+                # If create_collection returns true, it means the list of collections
+                # needs to be updated.
+                if (create_collection(session, uid)):
+                    results, count, max_page = refresh_collections(uid, per_page)
+                    cur_page = 0
+
+            case "p":
+                if (cur_page > 0):
+                    cur_page -= 1
+
+            case "n":
+                if (cur_page < max_page):
+                    cur_page += 1
+            
+            case _:
+                print("Command not recognized.")
+    
+    print("No collections found!")
+
+    return True
