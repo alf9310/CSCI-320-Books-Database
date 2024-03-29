@@ -6,6 +6,7 @@ from sqlalchemy import text
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 from users import Base as UserBase
+from book import Book
 
 class Log(UserBase):
     '''
@@ -53,6 +54,7 @@ class Log(UserBase):
             new_log = cls(bid, uid, start_time, end_time, start_page, end_page)
             session.add(new_log)
             session.commit()
+            print("log created successfully")
             return new_log()
         except Exception as e:
             print(e)
@@ -67,7 +69,10 @@ class Log(UserBase):
     Order by order_by and can limit the number of results returned with limit.
     '''
     @classmethod
-    def search(cls, session, bid=None, uid=None, start_time=None, end_time=None, start_page=None, end_page=None, order_by=None, limit=None):
+    def search(cls, session, query=None, bid=None, uid=None, start_time=None, end_time=None, start_page=None, end_page=None, order_by=None, limit=None):
+        if query is None:
+            query = session.query(Log)
+        
         if bid:
             query = query.filter(Log.bid == bid)
         if uid:
@@ -98,7 +103,7 @@ class Log(UserBase):
         session.commit()
 
     '''
-    Delete Book
+    Delete Log
     '''
     def delete(self, session):
         session.delete(self)
@@ -115,6 +120,9 @@ class Log(UserBase):
         if count == 0:
             print("You have no logs!")
         else:
-            for entry in query:
-                log, fcount = Log.search(session, uid=entry.uid)
-                print(log[0])
+            # entry is a log object
+            for log in query:
+                book, total_count = Book.search(session, bid=log.bid)
+                print(book[0].title)
+                print(f"\tStart page: {log.start_page}, End page: {log.end_page}")
+                print(f"\tStart time: {log.start_time}, End Time: {log.end_time}")
