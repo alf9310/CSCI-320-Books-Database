@@ -3,6 +3,7 @@ import utils
 from users import Users
 from friend import Friend
 from book import Book
+from collection import view_collections
 
 def login(session):
     print()
@@ -184,6 +185,7 @@ def find_books(session, current_user, descending = False, query = None):
     # TODO Not nessesary, bould would be nice to add book view where users can add to collection, add to log, or rate
     return
 
+''' Har Har colby was heeerrrreeee can prob delete this but whatev
 def view_collections(session, current_user):
     print()
     print("---------------View Collections---------------")
@@ -193,7 +195,7 @@ def view_collections(session, current_user):
     #TODO Collection view, where users can add and delete books from their collection
     #TODO add book view where users can add to current collection, add to log, or rate
     return
-
+'''
 def view_book_logs(session, current_user):
     print()
     print("---------------View Book Logs---------------")
