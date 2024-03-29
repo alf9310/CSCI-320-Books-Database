@@ -182,7 +182,7 @@ def search_by_edited() -> None:
 def search_by_genre() -> None:
     is_still_searching = True
     while(is_still_searching):
-        genre = utils.get_input_str("What is a book genre you are lookiing for?\n-> ")
+        genre = utils.get_input_str("What is a book genre you are looking for?\n-> ")
         
         print(f'Your search was, {genre}\n')
 
