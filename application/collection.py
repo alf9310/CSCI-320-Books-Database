@@ -2,11 +2,9 @@ from math import ceil
 from book import Book
 from users import Users
 from utils import ask_continue
-from sqlalchemy import create_engine, Column, Integer, String, DateTime, ForeignKey
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 from sqlalchemy.orm import declarative_base
 from datetime import datetime
-from typing import Union
 from sqlalchemy.sql.expression import func
 
 Base = declarative_base()
