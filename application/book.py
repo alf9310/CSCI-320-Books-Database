@@ -6,6 +6,7 @@ from sqlalchemy import text
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy import and_
+from sqlalchemy import desc
 
 
 
@@ -47,7 +48,7 @@ class Book(Base):
         #TODO must print ratings 
         authors = ", ".join([written.person.person_name for written in self.written_by])
         publishers = ", ".join([published.person.person_name for published in self.published_by])
-        return (f"Title: '{self.title}', Authors: '{authors}', Publishers: '{publishers}', Length: '{self.length}', Audience: ages {self.min_age}-{self.max_age}")
+        return (f"Title: '{self.title}', Authors: '{authors}', Publishers: '{publishers}', Length: '{self.length}', Audience: Ages {self.min_age}-{self.max_age}")
     
     '''
     Creates a new Book and add it to the database
@@ -71,8 +72,7 @@ class Book(Base):
     Order by order_by and can limit the number of results returned with limit.
     '''
     @classmethod
-    def search(cls, session, query=None, bid=None, title=None, release_date=None, author=None, publisher=None, genre=None, order_by=None, limit=None):
-        # TODO order by nama alphabetically by default
+    def search(cls, session, query=None, bid=None, title=None, release_date=None, author=None, publisher=None, genre=None, order_by=None, descending = False, limit=None):
         if query is None:
             query = session.query(Book)
 
@@ -95,10 +95,12 @@ class Book(Base):
             query = query.join(HasGenre).join(Genre).filter(Genre.genre_name.ilike(f"%{genre}%"))
 
         total_count = query.count()
-
         if order_by:
             if hasattr(Book, order_by):
-                query = query.order_by(getattr(Book, order_by))
+                if descending:
+                    query = query.order_by(getattr(Book, order_by).desc())
+                else:
+                    query = query.order_by(getattr(Book, order_by))
         if limit:
             query = query.limit(limit)
 
