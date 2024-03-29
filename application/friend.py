@@ -96,7 +96,9 @@ class Friend(Base):
         except Exception as e:
             #print(e)
             print("User does not exist!")
-
+    '''
+    List all users that the current user is following/has friended.
+    '''
     def listFriends(session, uid):
         query = session.query(Friend)
         query = query.filter(Friend.uid == uid)
