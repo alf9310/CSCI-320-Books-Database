@@ -151,11 +151,44 @@ def results_view(session, current_user, query, count):
             case "s":
                 #TODO: Sort stuff here!
                 # Sorting should prompt the user for:
-                # the attribute name to sort by
+                # the attribute name to sort by (book name, publisher, genre, and released year)
                 # and
                 # ASC or DESC (ascending or descending)
                 # it should alter the "query" variable in the scope
                 # of THIS function
+                order_by = "title"
+                descending = False
+                attributes = ("Title", "Publisher", "Genre", "Released Year")
+                print("What would you like to sort by?")
+                for i, attribute in enumerate(attributes):
+                    print(f"{i+1}:\t{attribute}")
+                sort_attribute = utils.get_input_int("-> ")
+                match sort_attribute:
+                    case "1":
+                        order_by = "title"
+                    case "2":
+                        order_by = "publisher"
+                    case "3":
+                        order_by = "genre"
+                    case "4":
+                        order_by = "release_year"
+                    case _:
+                        print(f"Please select a value in the range [1, {len(attributes)}].")
+                print("Would you like to sort in ascending or descending order?")
+                print("1:\tAscending")
+                print("2:\tDescending")
+                sort_order = utils.get_input_int("-> ")
+                match sort_order:
+                    case "1":
+                        descending = False
+                    case "2":
+                        descending = True
+                    case _:
+                        print(f"Please select a value in the range [1, 2].")
+                query, count = Book.search(session, query = query, order_by=order_by, descending=descending)
+
+                # Ensure distinct results
+                # query = query.distinct()
 
                 # also sets the current page back to 0 >:]
                 cur_page = 0
