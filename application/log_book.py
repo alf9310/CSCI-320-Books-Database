@@ -51,10 +51,10 @@ class Log(UserBase):
     @classmethod
     def create(cls, session, bid, uid, start_time, end_time, start_page, end_page):
         try:
-            new_log = cls(bid, uid, start_time, end_time, start_page, end_page)
+            new_log = cls(bid=bid, uid=uid, start_time=start_time, end_time=end_time, start_page=start_page, end_page=end_page)
             session.add(new_log)
             session.commit()
-            print("log created successfully")
+            print("Log created successfully")
             return new_log()
         except Exception as e:
             print(e)
