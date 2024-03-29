@@ -133,18 +133,37 @@ def search_by_author() -> None:
         # from person list, find the person that is most like the inputted author
         # then use the gotten persons to link them to the books they wrote
         query_statement = f"\
-            SELECT book.title, person.person_name \
+            {SELECT_STATEMENT} \
             FROM book \
             INNER JOIN written_by \
             ON book.bid = written_by.bid \
-            INNER JOIN person \
-            ON person.pid = written_by.pid \
-            WHERE person_name ILIKE '%{author_name}%' \
-            ORDER BY person_name"
+            INNER JOIN person author \
+            ON written_by.pid = author.pid \
+            INNER JOIN published_by \
+            ON book.bid = published_by.bid \
+            INNER JOIN person publisher \
+            ON published_by.pid = publisher.pid \
+            INNER JOIN rates \
+            ON book.bid = rates.bid \
+            INNER JOIN released_as \
+            ON book.bid = released_as.bid \
+            WHERE author.person_name ILIKE '%{author_name}%' \
+            GROUP BY \
+            book.title, author.person_name, publisher.person_name, book.length, book.min_age, book.max_age, released_as.date \
+            ORDER BY \
+            book.title ASC, \
+            released_as.date ASC"
         query_results = connect.execute_query(query_statement) 
         if query_results: 
             for results in query_results:
-                print(f'{results[0]} by {results[1]}')
+                book_title = results[0]
+                author = results[1]
+                publisher = results[2]
+                book_length = results[3]
+                book_min_age = results[4]
+                book_max_age = results[5]
+                book_rating = results[6]
+                print(f'{book_title}, {author}, {publisher}, {book_length} pages, {book_min_age}-{book_max_age}, {book_rating:.1f} stars')
         else:
             print("No results")
         
@@ -160,18 +179,37 @@ def search_by_published() -> None:
         print(f'Your search was, {publisher_name}\n')
 
         query_statement = f"\
-            SELECT book.title, person.person_name \
+            {SELECT_STATEMENT} \
             FROM book \
+            INNER JOIN written_by \
+            ON book.bid = written_by.bid \
+            INNER JOIN person author \
+            ON written_by.pid = author.pid \
             INNER JOIN published_by \
             ON book.bid = published_by.bid \
-            INNER JOIN person \
-            ON person.pid = published_by.pid \
-            WHERE person_name ILIKE '%{publisher_name}%' \
-            ORDER BY person_name"
+            INNER JOIN person publisher \
+            ON published_by.pid = publisher.pid \
+            INNER JOIN rates \
+            ON book.bid = rates.bid \
+            INNER JOIN released_as \
+            ON book.bid = released_as.bid \
+            WHERE publisher.person_name ILIKE '%{publisher_name}%' \
+            GROUP BY \
+            book.title, author.person_name, publisher.person_name, book.length, book.min_age, book.max_age, released_as.date \
+            ORDER BY \
+            book.title ASC, \
+            released_as.date ASC"
         query_results = connect.execute_query(query_statement) 
         if query_results: 
             for results in query_results:
-                print(f'{results[0]} edited by {results[1]}')
+                book_title = results[0]
+                author = results[1]
+                publisher = results[2]
+                book_length = results[3]
+                book_min_age = results[4]
+                book_max_age = results[5]
+                book_rating = results[6]
+                print(f'{book_title}, {author}, {publisher}, {book_length} pages, {book_min_age}-{book_max_age}, {book_rating:.1f} stars')
         else:
             print("No results")
         
@@ -215,18 +253,42 @@ def search_by_genre() -> None:
         print(f'Your search was, {genre}\n')
 
         query_statement = f"\
-            SELECT book.title, genre.genre_name \
+            {SELECT_STATEMENT}, genre.genre_name \
             FROM book \
+            INNER JOIN written_by \
+            ON book.bid = written_by.bid \
+            INNER JOIN person author \
+            ON written_by.pid = author.pid \
+            INNER JOIN published_by \
+            ON book.bid = published_by.bid \
+            INNER JOIN person publisher \
+            ON published_by.pid = publisher.pid \
+            INNER JOIN rates \
+            ON book.bid = rates.bid \
+            INNER JOIN released_as \
+            ON book.bid = released_as.bid \
             INNER JOIN has_genre \
             ON book.bid = has_genre.bid \
             INNER JOIN genre \
             ON genre.gid = has_genre.gid \
             WHERE genre.genre_name ILIKE '%{genre}%' \
-            ORDER BY genre.genre_name"
+            GROUP BY \
+            book.title, author.person_name, publisher.person_name, book.length, book.min_age, book.max_age, released_as.date, genre.genre_name \
+            ORDER BY \
+            book.title ASC, \
+            released_as.date ASC"
         query_results = connect.execute_query(query_statement) 
         if query_results: 
             for results in query_results:
-                print(f'{results[1]}: {results[0]}')
+                book_title = results[0]
+                author = results[1]
+                publisher = results[2]
+                book_length = results[3]
+                book_min_age = results[4]
+                book_max_age = results[5]
+                book_rating = results[6]
+                book_genre = results[7]
+                print(f'{book_genre}: {book_title}, {author}, {publisher}, {book_length} pages, {book_min_age}-{book_max_age}, {book_rating:.1f} stars')
         else:
             print("No results")
         
@@ -272,15 +334,37 @@ def search_release_date() -> None:
 
         # get the release date then order based on alphabetical
         query_statement = f"\
-            SELECT book.title, released_as.date \
+            {SELECT_STATEMENT} \
             FROM book \
+            INNER JOIN written_by \
+            ON book.bid = written_by.bid \
+            INNER JOIN person author \
+            ON written_by.pid = author.pid \
+            INNER JOIN published_by \
+            ON book.bid = published_by.bid \
+            INNER JOIN person publisher \
+            ON published_by.pid = publisher.pid \
+            INNER JOIN rates \
+            ON book.bid = rates.bid \
             JOIN released_as \
             ON book.bid = released_as.bid \
-            WHERE DATE(released_as.date) = '{release_date}'"
+            WHERE DATE(released_as.date) = '{release_date}' \
+            GROUP BY \
+            book.title, author.person_name, publisher.person_name, book.length, book.min_age, book.max_age, released_as.date \
+            ORDER BY \
+            book.title ASC, \
+            released_as.date ASC"
         query_results = connect.execute_query(query_statement) 
         if query_results: 
             for results in query_results:
-                print(f'{results[1]}: {results[0]}')
+                book_title = results[0]
+                author = results[1]
+                publisher = results[2]
+                book_length = results[3]
+                book_min_age = results[4]
+                book_max_age = results[5]
+                book_rating = results[6]
+                print(f'{book_title}, {author}, {publisher}, {book_length} pages, {book_min_age}-{book_max_age}, {book_rating:.1f} stars')
         else:
             print("No results")
         

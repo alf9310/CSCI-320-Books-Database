@@ -93,15 +93,16 @@ def main():
 
 
     # ----------------Testing Book Searching----------------
-    book_search.search_by_title() 
-    # search.search_by_length()
+    # book_search.search_by_title() 
+    # book_search.search_by_length()
     #search.search_by_min_age()
     #search.search_by_max_age()
-    # search.search_by_author()
-    #search.search_by_genre()
+    # book_search.search_by_author()
+    # book_search.search_by_genre()
     #search.search_by_edited()
-    #search.search_by_published()
-    # book_search.search_release_date()
+    # book_search.search_by_published()
+    # 1916-03-07
+    book_search.search_release_date()
     # ook_search.search_format()
     session.close()
 
