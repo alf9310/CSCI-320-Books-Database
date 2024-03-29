@@ -102,7 +102,7 @@ def search_by_author() -> None:
         
         print(f'Your search was, {author_name}\n')
 
-        # from person list, find the person that is most like the inputted author
+        # from person list, find the person that is most like the inputed author
         # then use the gotten persons to link them to the books they wrote
         query_statement = f"\
             SELECT book.title, person.person_name \
