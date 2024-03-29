@@ -6,6 +6,9 @@ from sqlalchemy import text
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 
+from book import Book
+from users import Users
+
 Base = declarative_base()
 
 class Log(Base):
@@ -21,6 +24,10 @@ class Log(Base):
     
     start_page = Column(Integer)
     end_page = Column(Integer)
+
+    # Define relationships
+    book = relationship("Book", back_populates="logs")
+    user = relationship("User", back_populates="logs")
 
 
     '''
@@ -100,7 +107,3 @@ class Log(Base):
     def delete(self, session):
         session.delete(self)
         session.commit()
-
-    # # Define relationships
-    # book = relationship("Book", back_populates="logs")
-    # user = relationship("User", back_populates="logs")
