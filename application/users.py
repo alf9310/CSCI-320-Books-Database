@@ -73,9 +73,9 @@ class Users(Base):
         if last_name:
             query = query.filter(Users.last_name.ilike(f"%{last_name}%"))
         if username:
-            query = query.filter(Users.username.ilike(f"%{username}%"))
+            query = query.filter(Users.username.like(f"{username}"))
         if password:
-            query = query.filter(Users.password.ilike(f"%{password}%"))
+            query = query.filter(Users.password.like(f"{password}"))
         if email:
             query = query.filter(Users.email.ilike(f"%{email}%"))
 
