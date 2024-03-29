@@ -84,9 +84,6 @@ class Rates(Base):
         if count == 0:
             print("You have not rated any books")
         else:
-            curr_num = 0
             for entry in query:
-                rating, fcount = Rates.search(session, uid=entry.uid)
-                title = (session.query(Book).filter_by(bid=rating[curr_num].bid).order_by(Book.bid).first()).title
-                print(f"\tTitle: {title}, Rating: {rating[curr_num].rating}")
-                curr_num += 1
+                title = (session.query(Book).filter_by(bid=entry.bid).first()).title
+                print(f"\tTitle: {title}, Rating: {entry.rating}")
