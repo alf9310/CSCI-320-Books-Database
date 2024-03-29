@@ -5,7 +5,7 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy import and_
 from sqlalchemy import desc
-from users import Base as UserBase
+from users import Base as UserBase, Users
 
 class Book(UserBase):
     '''
@@ -39,12 +39,18 @@ class Book(UserBase):
     '''
     To-string for Books
     '''
-    def __str__(self):
-        #TODO must print ratings 
-        authors = ", ".join([written.person.person_name for written in self.written_by if written.person is not None])        
-        publishers = ", ".join([published.person.person_name for published in self.published_by if published.person is not None])
-        return (f"Title: '{self.title}', Authors: '{authors}', Publishers: '{publishers}', Length: '{self.length}', Audience: Ages {self.min_age}-{self.max_age}")
-    
+    def __str__(self, session=None):
+        if session is not None:
+            authors = ", ".join([written.person.person_name for written in self.written_by if written.person is not None])        
+            publishers = ", ".join([published.person.person_name for published in self.published_by if published.person is not None])
+            rating = Rates.get_average_rating(session, self.bid)
+            return (f"Title: '{self.title}', Authors: '{authors}', Publishers: '{publishers}', Length: '{self.length}', Audience: Ages {self.min_age}-{self.max_age}, Rating: {rating}")
+        else:
+            authors = ", ".join([written.person.person_name for written in self.written_by if written.person is not None])        
+            publishers = ", ".join([published.person.person_name for published in self.published_by if published.person is not None])
+            return (f"Title: '{self.title}', Authors: '{authors}', Publishers: '{publishers}', Length: '{self.length}', Audience: Ages {self.min_age}-{self.max_age}")
+
+
     '''
     Creates a new Book and add it to the database
     '''
@@ -209,3 +215,97 @@ class Format(UserBase):
 
     # Define relationships
     released_books = relationship("ReleasedAs", back_populates="format")
+
+class Rates(UserBase):
+    '''Defines Rates'''
+
+    __tablename__ = 'rates'
+    uid = Column(Integer, ForeignKey(Users.uid), primary_key = True)
+    bid = Column(Integer, ForeignKey(Book.bid), primary_key = True)
+    rating = Column(Integer)
+
+    def __init__(self, uid, bid, rating):
+        self.uid = uid
+        self.bid = bid
+        self.rating = rating
+    
+    def __str__(self):
+        return(f"Rates(uid={self.uid}, bid={self.bid}, rating={self.rating})")
+    
+    '''
+    Creates a new Rates and adds it to the database
+    '''
+    @classmethod
+    def create(cls, session, uid, bid, rating_received):
+        try:
+            new_rating = cls(uid=uid, bid=bid, rating = max(min(rating_received, 5), 1))
+            session.add(new_rating)
+            session.commit()
+            return new_rating
+        except Exception as e:
+            print(e)
+            session.rollback()
+            return None 
+    
+    def change_rating(session, uid, bid, new_rating):
+        results, count = Rates.search(session, uid, bid)
+        if(count != 1):
+            print("Doesn't exist")
+            return False
+        else:
+            rating_to_change = results.first()
+            rating_to_change.rating = max(min(new_rating, 5), 1)
+            session.commit()
+            return True
+
+    
+    @classmethod
+    def search(cls, session, uid=None, bid=None, rating=None, order_by=None):
+        query = session.query(Rates)
+        if uid:
+            query = query.filter(Rates.uid == uid)
+        if bid:
+            query = query.filter(Rates.bid == bid)
+        if rating:
+            query = query.filter(Rates.rating == rating)
+
+        total_count = query.count()
+
+        if order_by:
+            if hasattr(Rates, order_by):
+                query = query.order_by(getattr(Rates, order_by))
+
+        return query, total_count
+
+    def save(self, session):
+        session.commit()
+    
+
+    def get_average_rating(session, bid):
+        query = session.query(Rates)
+        query = query.filter(Rates.bid == bid)
+
+        count = query.count()
+        if count == 0:
+            return "-"
+        else:
+            rating_count = 0
+            average_rating = 0
+            for entry in query:
+                average_rating += entry.rating
+                rating_count += 1
+            average_rating /= rating_count
+            return str(average_rating)
+
+
+    def rating_view(session, uid):
+        query = session.query(Rates)
+        query = query.filter(Rates.uid == uid)
+
+        count = query.count()
+        if count == 0:
+            print("You have not rated any books")
+        else:
+            for entry in query:
+                title = (session.query(Book).filter_by(bid=entry.bid).first()).title
+                print(f"\tTitle: {title}, Rating: {entry.rating}")

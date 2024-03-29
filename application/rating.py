@@ -6,7 +6,7 @@ from datetime import datetime
 from typing import Union
 from sqlalchemy.sql.expression import func
 from book import Book
-from users import Users
+from users import Users 
 
 Base = declarative_base()
 
@@ -39,7 +39,7 @@ class Rates(Base):
         except Exception as e:
             print(e)
             session.rollback()
-            return None
+            return None 
     
     def change_rating(session, uid, bid, new_rating):
         results, count = Rates.search(session, uid, bid)

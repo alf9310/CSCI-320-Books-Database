@@ -121,7 +121,8 @@ def results_view(session, current_user, query, count):
         for i in range(start_index, start_index + per_page):
             if (i >= count):
                 break
-            print(f"{i+1}:\t{query[i]}")
+            string_rep = query[i].__str__(session)
+            print(f"{i+1}:\t{string_rep}")
             # TODO books need to show ratings
 
         print(f"Page {cur_page + 1} of {max_page + 1}")
