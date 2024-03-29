@@ -8,6 +8,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy import and_
 
 
+
 Base = declarative_base()
 
 class Book(Base):
@@ -27,7 +28,6 @@ class Book(Base):
     edited_by = relationship("EditedBy", back_populates="book")
     has_genre = relationship("HasGenre", back_populates="book")
     released_formats = relationship("ReleasedAs", back_populates="book")
-
     logs = relationship("Log", back_populates="book")
 
     '''

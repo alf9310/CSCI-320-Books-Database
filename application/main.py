@@ -194,7 +194,9 @@ def view_collections(session, current_user):
 def view_book_logs(session, current_user):
     print()
     print("---------------View Book Logs---------------")
+    # display all the logs this user currently has
     Log.listLogs(session, current_user.uid)
+    
     #TODO Search logs by the current user's uid, sort by most recent
     #TODO add book view where users can add to collection, add to log, or rate
     return

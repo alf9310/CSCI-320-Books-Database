@@ -17,7 +17,7 @@ class Log(Base):
     '''
     __tablename__ = 'logs'
     bid = Column(Integer, ForeignKey('book.bid'), primary_key=True)
-    uid = Column(Integer, ForeignKey('users.bid'), primary_key=True)
+    uid = Column(Integer, ForeignKey('users.uid'), primary_key=True)
     
     start_time = Column(DateTime, primary_key=True) 
     end_time = Column(DateTime)
@@ -27,7 +27,7 @@ class Log(Base):
 
     # Define relationships
     book = relationship("Book", back_populates="logs")
-    user = relationship("User", back_populates="logs")
+    user = relationship("Users", back_populates="logs")
 
 
     '''
