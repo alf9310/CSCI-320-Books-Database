@@ -55,7 +55,7 @@ class Log(UserBase):
             session.add(new_log)
             session.commit()
             print("Log created successfully")
-            return new_log()
+            return new_log
         except Exception as e:
             print(e)
             session.rollback()
