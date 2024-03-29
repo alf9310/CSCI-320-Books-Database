@@ -4,8 +4,9 @@ import utils
 from users import Users
 from friend import Friend
 from book import Book
-from collection import view_collections
 from log_book import Log
+from collection import view_collections
+#from log_book import Log
 
 def login(session):
     print()

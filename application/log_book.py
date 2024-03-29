@@ -5,19 +5,15 @@ from sqlalchemy.sql.expression import func
 from sqlalchemy import text
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
+from users import Base as UserBase
 
-from book import Book
-from users import Users
-
-Base = declarative_base()
-
-class Log(Base):
+class Log(UserBase):
     '''
     Defines Log
     '''
     __tablename__ = 'logs'
-    bid = Column(Integer, ForeignKey('book.bid'), primary_key=True)
-    uid = Column(Integer, ForeignKey('users.uid'), primary_key=True)
+    bid = Column(Integer, ForeignKey(UserBase.metadata.tables['book'].c.bid), primary_key=True)
+    uid = Column(Integer, ForeignKey(UserBase.metadata.tables['users'].c.uid), primary_key=True)
     
     start_time = Column(DateTime, primary_key=True) 
     end_time = Column(DateTime)

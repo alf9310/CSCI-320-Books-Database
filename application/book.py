@@ -7,12 +7,9 @@ from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy import and_
 from sqlalchemy import desc
+from users import Base as UserBase
 
-
-
-Base = declarative_base()
-
-class Book(Base):
+class Book(UserBase):
     '''
     Defines Book
     '''
@@ -119,7 +116,7 @@ class Book(Base):
         session.delete(self)
         session.commit()
 
-class WrittenBy(Base):
+class WrittenBy(UserBase):
     '''
     Defines relationship between Book and Person for writing
     '''
@@ -131,7 +128,7 @@ class WrittenBy(Base):
     book = relationship("Book", back_populates="written_by")
     person = relationship("Person", back_populates="written_by")
 
-class PublishedBy(Base):
+class PublishedBy(UserBase):
     '''
     Defines relationship between Book and Person for publishing
     '''
@@ -143,7 +140,7 @@ class PublishedBy(Base):
     book = relationship("Book", back_populates="published_by")
     person = relationship("Person", back_populates="published_by")
 
-class EditedBy(Base):
+class EditedBy(UserBase):
     '''
     Defines relationship between Book and Person for editing
     '''
@@ -155,7 +152,7 @@ class EditedBy(Base):
     book = relationship("Book", back_populates="edited_by")
     person = relationship("Person", back_populates="edited_by")
 
-class Person(Base):
+class Person(UserBase):
     '''
     Defines Person
     '''
@@ -168,7 +165,7 @@ class Person(Base):
     published_by = relationship("PublishedBy", back_populates="person")
     edited_by = relationship("EditedBy", back_populates="person")
 
-class HasGenre(Base):
+class HasGenre(UserBase):
     '''
     Defines relationship between Genre and Book
     '''
@@ -180,7 +177,7 @@ class HasGenre(Base):
     book = relationship("Book", back_populates="has_genre")
     genre = relationship("Genre", back_populates="has_genre")
 
-class Genre(Base):
+class Genre(UserBase):
     '''
     Defines Genre
     '''
@@ -191,7 +188,7 @@ class Genre(Base):
     # Define relationships
     has_genre = relationship("HasGenre", back_populates="genre")
 
-class ReleasedAs(Base):
+class ReleasedAs(UserBase):
     '''
     Defines relationship between Book and Format
     '''
@@ -204,7 +201,7 @@ class ReleasedAs(Base):
     book = relationship("Book", back_populates="released_formats")
     format = relationship("Format", back_populates="released_books")
 
-class Format(Base):
+class Format(UserBase):
     '''
     Defines Format
     '''
