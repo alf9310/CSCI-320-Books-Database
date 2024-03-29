@@ -9,38 +9,38 @@ def main():
     # Connect to the database
     session = connect.test_connection()
 
-    # returning = utils.ask_continue("Are you a returning user?")
-    # print()
-    # # Login with existing user
-    # if returning:
-    #     print("-----Login-----")
-    #     username = input("Username: ")
-    #     password = input("Password: ")
-    #     results, total_count = Users.search(session, username = username, password = password)
-    #     while total_count == 0:
-    #         print("Incorrect Username and/or Password, please try again")
-    #         username = input("Username: ")
-    #         password = input("Password: ")
-    #         results, total_count = Users.search(session, username = username, password = password)
-    #     current_user = results[0]
-    #     current_user.save(session) # Updates last_accessed
-    #     Friend.unfriend(session, current_user.uid)
-    #     print("Login sucessful")
-    # # Create a new user
-    # else:
-    #     print("-----Create New User-----")
-    #     username = input("Username: ")
-    #     results, total_count = Users.search(session, username = username)
-    #     while total_count > 0: # Makes sure usernames are unique
-    #         print("Username already taken, please enter a new one")
-    #         username = input("Username: ")
-    #         results, total_count = Users.search(session, username = username)
-    #     password = input("Password: ")
-    #     first_name = input("First Name: ")
-    #     last_name = input("Last Name: ")
-    #     email = input("Email: ")
-    #     current_user = Users.create(session, first_name = first_name, last_name = last_name, username = username, password = password, email = email)
-    #     print("User creation sucessful")
+    returning = utils.ask_continue("Are you a returning user?")
+    print()
+    # Login with existing user
+    if returning:
+        print("-----Login-----")
+        username = input("Username: ")
+        password = input("Password: ")
+        results, total_count = Users.search(session, username = username, password = password)
+        while total_count == 0:
+            print("Incorrect Username and/or Password, please try again")
+            username = input("Username: ")
+            password = input("Password: ")
+            results, total_count = Users.search(session, username = username, password = password)
+        current_user = results[0]
+        current_user.save(session) # Updates last_accessed
+        Friend.unfriend(session, current_user.uid)
+        print("Login sucessful")
+    # Create a new user
+    else:
+        print("-----Create New User-----")
+        username = input("Username: ")
+        results, total_count = Users.search(session, username = username)
+        while total_count > 0: # Makes sure usernames are unique
+            print("Username already taken, please enter a new one")
+            username = input("Username: ")
+            results, total_count = Users.search(session, username = username)
+        password = input("Password: ")
+        first_name = input("First Name: ")
+        last_name = input("Last Name: ")
+        email = input("Email: ")
+        current_user = Users.create(session, first_name = first_name, last_name = last_name, username = username, password = password, email = email)
+        print("User creation sucessful")
         
 
     # ----------------Testing User usage----------------
@@ -95,7 +95,7 @@ def main():
     # ----------------Testing Book Searching----------------
     #book_search.search_by_title() 
     #book_search.search_by_author()
-    book_search.search_by_genre()
+    # book_search.search_by_genre()
     #book_search.search_by_published()
     # 1916-03-07
     #book_search.search_release_date()
