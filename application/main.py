@@ -57,7 +57,6 @@ def home_page(session, current_user):
     print("View Collections")
     print("View Book Logs")
     print("View Friends")
-    print("Settings")
     print("Log Out")
     input = utils.get_input_str("-> ")
     print()
@@ -74,15 +73,12 @@ def home_page(session, current_user):
         case "View Friends":
             view_friends(session, current_user)
             home_page(session, current_user)
-        case "Settings":
-            settings(session, current_user)
-            home_page(session, current_user)
         case "Log Out":
             print("You have been logged out\n")
             login(session)
         case _:
-            print("Invalid input, plehome_page(session, current_user)ase enter either " + 
-                  "\'Find Books\', \'View Collections\', \'View Book Logs\', \'View Friends\', \'Settings\' or \'Log Out\'")
+            print("Invalid input, please enter either " + 
+                  "\'Find Books\', \'View Collections\', \'View Book Logs\', \'View Friends\' or \'Log Out\'")
             home_page(session, current_user)
     return
 
@@ -126,7 +122,7 @@ def find_books(session, current_user):
             home_page(session, current_user)
         case _:
             print("Invalid input, please enter either " + 
-                  "\'Find Books\', \'View Collections\', \'View Book Logs\', \'View Friends\' or \'Settings\'")
+                  "\'Find Books\', \'View Collections\', \'View Book Logs\' or \'View Friends\'")
     # TODO better print format for books. Label books name, the authors, the publisher, the length, audience and the ratings
     # TODO The list must be sorted alphabetically (ascending) by books name and release date. 
     # TODO Users can sort the resulting list: book name, publisher, genre, and released year (ascending and descending)
@@ -170,12 +166,6 @@ def view_friends(session, current_user):
         case _:
             print("Invalid input, please enter either \'Friend\', \'Unfriend\' or \'Home Page\'")
             view_friends(session, current_user)
-    return
-
-def settings(session, current_user):
-    print()
-    print("---------------Settings---------------")
-    #TODO users can change email, username, password, etc. or delete account
     return
 
 def main():
