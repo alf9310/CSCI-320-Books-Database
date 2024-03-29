@@ -11,6 +11,9 @@ def search_by_title() -> None:
         
         print(f'Your search was, {title}\n')
 
+        ORDER = "book.title ASC"
+        order_list = []
+
         query_statement = f"\
             {SELECT_STATEMENT} \
             FROM book \
@@ -26,15 +29,39 @@ def search_by_title() -> None:
             ON book.bid = rates.bid \
             INNER JOIN released_as \
             ON book.bid = released_as.bid \
+            INNER JOIN has_genre \
+            ON book.bid = has_genre.bid \
+            INNER JOIN genre \
+            ON genre.gid = has_genre.gid \
             WHERE title ILIKE '%{title}%' \
             GROUP BY \
             book.title, author.person_name, publisher.person_name, book.length, book.min_age, book.max_age, released_as.date \
             ORDER BY \
-            book.title ASC, \
-            released_as.date ASC"
-            
+            {ORDER}"
+        
         query_results = connect.execute_query(query_statement) 
         if query_results: 
+            desc_or_asc = utils.get_desc_or_asc("Would you like to sort ASC or DESC? [asc/desc]")
+
+            name_sort = utils.ask_continue("Would you like to sort by name?")
+            if name_sort:
+                order_list.append(f"book.title {desc_or_asc}")
+            publisher_sort = utils.ask_continue("Would you like to search by publisher?")
+            if publisher_sort:
+                order_list.append(f"publisher.person_name {desc_or_asc}")
+            genre_sort = utils.ask_continue("Would you like to search by genre?")
+            if genre_sort:
+                order_list.append(f"genre.genre_name {desc_or_asc}")
+            released_sort = utils.ask_continue("Would you like to search by released date?")
+            if released_sort:
+                order_list.append(f"released_as.date {desc_or_asc}")
+            if not name_sort and not publisher_sort and not genre_sort and not released_sort:
+                ORDER = f"book.title {desc_or_asc}, \
+                        released_as.date {desc_or_asc}"
+            else:
+                ORDER = ", ".join(order_list)        
+                    
+            query_results = connect.execute_query(query_statement) 
             for results in query_results:
                 book_title = results[0]
                 author = results[1]
@@ -130,6 +157,9 @@ def search_by_author() -> None:
         
         print(f'Your search was, {author_name}\n')
 
+        ORDER = "book.title ASC"
+        order_list = []
+
         # from person list, find the person that is most like the inputted author
         # then use the gotten persons to link them to the books they wrote
         query_statement = f"\
@@ -151,10 +181,31 @@ def search_by_author() -> None:
             GROUP BY \
             book.title, author.person_name, publisher.person_name, book.length, book.min_age, book.max_age, released_as.date \
             ORDER BY \
-            book.title ASC, \
-            released_as.date ASC"
+            {ORDER}"
+        
         query_results = connect.execute_query(query_statement) 
         if query_results: 
+            desc_or_asc = utils.get_desc_or_asc("Would you like to sort ASC or DESC? [asc/desc]")
+
+            name_sort = utils.ask_continue("Would you like to sort by name?")
+            if name_sort:
+                order_list.append(f"book.title {desc_or_asc}")
+            publisher_sort = utils.ask_continue("Would you like to search by publisher?")
+            if publisher_sort:
+                order_list.append(f"publisher.person_name {desc_or_asc}")
+            genre_sort = utils.ask_continue("Would you like to search by genre?")
+            if genre_sort:
+                order_list.append(f"genre.genre_name {desc_or_asc}")
+            released_sort = utils.ask_continue("Would you like to search by released date?")
+            if released_sort:
+                order_list.append(f"released_as.date {desc_or_asc}")
+            if not name_sort and not publisher_sort and not genre_sort and not released_sort:
+                ORDER = f"book.title {desc_or_asc}, \
+                        released_as.date {desc_or_asc}"
+            else:
+                ORDER = ", ".join(order_list)        
+                    
+            query_results = connect.execute_query(query_statement) 
             for results in query_results:
                 book_title = results[0]
                 author = results[1]
@@ -178,6 +229,9 @@ def search_by_published() -> None:
         
         print(f'Your search was, {publisher_name}\n')
 
+        ORDER = "book.title ASC"
+        order_list = []
+
         query_statement = f"\
             {SELECT_STATEMENT} \
             FROM book \
@@ -197,10 +251,31 @@ def search_by_published() -> None:
             GROUP BY \
             book.title, author.person_name, publisher.person_name, book.length, book.min_age, book.max_age, released_as.date \
             ORDER BY \
-            book.title ASC, \
-            released_as.date ASC"
+            {ORDER}"
+        
         query_results = connect.execute_query(query_statement) 
         if query_results: 
+            desc_or_asc = utils.get_desc_or_asc("Would you like to sort ASC or DESC? [asc/desc]")
+
+            name_sort = utils.ask_continue("Would you like to sort by name?")
+            if name_sort:
+                order_list.append(f"book.title {desc_or_asc}")
+            publisher_sort = utils.ask_continue("Would you like to search by publisher?")
+            if publisher_sort:
+                order_list.append(f"publisher.person_name {desc_or_asc}")
+            genre_sort = utils.ask_continue("Would you like to search by genre?")
+            if genre_sort:
+                order_list.append(f"genre.genre_name {desc_or_asc}")
+            released_sort = utils.ask_continue("Would you like to search by released date?")
+            if released_sort:
+                order_list.append(f"released_as.date {desc_or_asc}")
+            if not name_sort and not publisher_sort and not genre_sort and not released_sort:
+                ORDER = f"book.title {desc_or_asc}, \
+                        released_as.date {desc_or_asc}"
+            else:
+                ORDER = ", ".join(order_list)        
+                    
+            query_results = connect.execute_query(query_statement) 
             for results in query_results:
                 book_title = results[0]
                 author = results[1]
@@ -252,6 +327,9 @@ def search_by_genre() -> None:
         
         print(f'Your search was, {genre}\n')
 
+        ORDER = "book.title ASC"
+        order_list = []
+
         query_statement = f"\
             {SELECT_STATEMENT}, genre.genre_name \
             FROM book \
@@ -275,10 +353,31 @@ def search_by_genre() -> None:
             GROUP BY \
             book.title, author.person_name, publisher.person_name, book.length, book.min_age, book.max_age, released_as.date, genre.genre_name \
             ORDER BY \
-            book.title ASC, \
-            released_as.date ASC"
+            {ORDER}"
+        
         query_results = connect.execute_query(query_statement) 
         if query_results: 
+            desc_or_asc = utils.get_desc_or_asc("Would you like to sort ASC or DESC?")
+
+            name_sort = utils.ask_continue("Would you like to sort by name?")
+            if name_sort:
+                order_list.append(f"book.title {desc_or_asc}")
+            publisher_sort = utils.ask_continue("Would you like to search by publisher?")
+            if publisher_sort:
+                order_list.append(f"publisher.person_name {desc_or_asc}")
+            genre_sort = utils.ask_continue("Would you like to search by genre?")
+            if genre_sort:
+                order_list.append(f"genre.genre_name {desc_or_asc}")
+            released_sort = utils.ask_continue("Would you like to search by released date?")
+            if released_sort:
+                order_list.append(f"released_as.date {desc_or_asc}")
+            if not name_sort and not publisher_sort and not genre_sort and not released_sort:
+                ORDER = f"book.title {desc_or_asc}, \
+                        released_as.date {desc_or_asc}"
+            else:
+                ORDER = ", ".join(order_list)  
+                    
+            query_results = connect.execute_query(query_statement) 
             for results in query_results:
                 book_title = results[0]
                 author = results[1]
@@ -332,6 +431,9 @@ def search_release_date() -> None:
         
         print(f'Your search was, {release_date}\n')
 
+        ORDER = "book.title ASC"
+        order_list = []
+
         # get the release date then order based on alphabetical
         query_statement = f"\
             {SELECT_STATEMENT} \
@@ -352,10 +454,31 @@ def search_release_date() -> None:
             GROUP BY \
             book.title, author.person_name, publisher.person_name, book.length, book.min_age, book.max_age, released_as.date \
             ORDER BY \
-            book.title ASC, \
-            released_as.date ASC"
+            {ORDER}"
+        
         query_results = connect.execute_query(query_statement) 
         if query_results: 
+            desc_or_asc = utils.get_desc_or_asc("Would you like to sort ASC or DESC? [asc/desc]")
+
+            name_sort = utils.ask_continue("Would you like to sort by name?")
+            if name_sort:
+                order_list.append(f"book.title {desc_or_asc}")
+            publisher_sort = utils.ask_continue("Would you like to search by publisher?")
+            if publisher_sort:
+                order_list.append(f"publisher.person_name {desc_or_asc}")
+            genre_sort = utils.ask_continue("Would you like to search by genre?")
+            if genre_sort:
+                order_list.append(f"genre.genre_name {desc_or_asc}")
+            released_sort = utils.ask_continue("Would you like to search by released date?")
+            if released_sort:
+                order_list.append(f"released_as.date {desc_or_asc}")
+            if not name_sort and not publisher_sort and not genre_sort and not released_sort:
+                ORDER = f"book.title {desc_or_asc}, \
+                        released_as.date {desc_or_asc}"
+            else:
+                ORDER = ", ".join(order_list)        
+                    
+            query_results = connect.execute_query(query_statement) 
             for results in query_results:
                 book_title = results[0]
                 author = results[1]

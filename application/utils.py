@@ -26,6 +26,18 @@ def get_input_str(message: str) -> str:
     return user_in
 
 
+def get_desc_or_asc(message: str) -> str:
+    user_in = ""
+    invalid_list = [""]
+    while (True):
+        user_in = input(f'\n{message} [asc/desc]\n-> ')
+        if user_in in invalid_list and user_in.lower() != "desc" and user_in.lower != 'asc':
+            print("invalid input")
+        else:
+            break
+    return user_in.upper()
+
+
 def get_input_int(message: str) -> str:
     user_in = ""
     invalid_list = [""]
