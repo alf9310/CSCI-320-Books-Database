@@ -119,10 +119,11 @@ def find_books(session, current_user):
         case "Rating":
             search.search_by_rates()
         case "Home Page":
-            home_page(session, current_user)
+            return
         case _:
             print("Invalid input, please enter either " + 
-                  "\'Find Books\', \'View Collections\', \'View Book Logs\' or \'View Friends\'")
+                  "\'Title\', \'Length\', \'Minimum Recommended Age\', \'Maximum Recommended Age\', \'Author\', " +
+                  "\'Publisher\', \'Editor\', \'Genre\', \'Rating\' or \'Home Page\'")
     # TODO better print format for books. Label books name, the authors, the publisher, the length, audience and the ratings
     # TODO The list must be sorted alphabetically (ascending) by books name and release date. 
     # TODO Users can sort the resulting list: book name, publisher, genre, and released year (ascending and descending)
@@ -162,7 +163,7 @@ def view_friends(session, current_user):
             Friend.unfriend(session, current_user.uid)
             view_friends(session, current_user)
         case "Home Page":
-            home_page(session, current_user)
+            return
         case _:
             print("Invalid input, please enter either \'Friend\', \'Unfriend\' or \'Home Page\'")
             view_friends(session, current_user)
