@@ -41,8 +41,8 @@ class Book(UserBase):
     '''
     def __str__(self):
         #TODO must print ratings 
-        authors = ", ".join([written.person.person_name for written in self.written_by])
-        publishers = ", ".join([published.person.person_name for published in self.published_by])
+        authors = ", ".join([written.person.person_name for written in self.written_by if written.person is not None])        
+        publishers = ", ".join([published.person.person_name for published in self.published_by if published.person is not None])
         return (f"Title: '{self.title}', Authors: '{authors}', Publishers: '{publishers}', Length: '{self.length}', Audience: Ages {self.min_age}-{self.max_age}")
     
     '''
