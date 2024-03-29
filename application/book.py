@@ -70,6 +70,7 @@ class Book(Base):
     '''
     @classmethod
     def search(cls, session, query=None, bid=None, title=None, release_date=None, author=None, publisher=None, genre=None, order_by=None, limit=None):
+        # TODO order by nama alphabetically by default
         if query is None:
             query = session.query(Book)
 

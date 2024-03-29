@@ -98,55 +98,70 @@ def find_books(session, current_user, query = None):
         case "Title":
             print("Enter Book Title")
             title = utils.get_input_str("-> ")
-            results, total_count = Book.search(session, title=title, query=query)
+            query, total_count = Book.search(session, title=title, query=query)
             print(total_count, "Books found")
-            for result in results:
+            for result in query:
                 print(result)
             cont = utils.ask_continue("Would you like to filter this list?")
             if cont:
+                print("Filtering List")
                 find_books(session, current_user, query = query)
+            else:
+                find_books(session, current_user)
         case "Release Date":
             print("Enter Book Minimum Release Date")
             min_release_date = utils.get_input_str("-> ")
             print("Enter Book Maximum Release Date")
             max_release_date = utils.get_input_str("-> ")
-            results, total_count = Book.search(session, release_date=[min_release_date, max_release_date], query=query)
+            query, total_count = Book.search(session, release_date=[min_release_date, max_release_date], query=query)
             print(total_count, "Books found")
-            for result in results:
+            for result in query:
                 print(result)
             cont = utils.ask_continue("Would you like to filter this list?")
             if cont:
+                print("Filtering List")
                 find_books(session, current_user, query = query)
+            else:
+                find_books(session, current_user)
         case "Author":
             print("Enter Book Author")
             author = utils.get_input_str("-> ")
-            results, total_count = Book.search(session, author=author, query=query)
+            query, total_count = Book.search(session, author=author, query=query)
             print(total_count, "Books found")
-            for result in results:
+            for result in query:
                 print(result)
             cont = utils.ask_continue("Would you like to filter this list?")
             if cont:
+                print("Filtering List")
                 find_books(session, current_user, query = query)
+            else:
+                find_books(session, current_user)
         case "Publisher":
             print("Enter Book Publisher")
             publisher = utils.get_input_str("-> ")
-            results, total_count = Book.search(session, publisher=publisher, query=query)
+            query, total_count = Book.search(session, publisher=publisher, query=query)
             print(total_count, "Books found")
-            for result in results:
+            for result in query:
                 print(result)
             cont = utils.ask_continue("Would you like to filter this list?")
             if cont:
+                print("Filtering List")
                 find_books(session, current_user, query = query)
+            else:
+                find_books(session, current_user)
         case "Genre":
             print("Enter Book Genre")
             genre = utils.get_input_str("-> ")
-            results, total_count = Book.search(session, genre=genre, query=query)
+            query, total_count = Book.search(session, genre=genre, query=query)
             print(total_count, "Books found")
-            for result in results:
+            for result in query:
                 print(result)
             cont = utils.ask_continue("Would you like to filter this list?")
             if cont:
+                print("Filtering List")
                 find_books(session, current_user, query = query)
+            else:
+                find_books(session, current_user)
         case "Home Page":
             return
         case _:
