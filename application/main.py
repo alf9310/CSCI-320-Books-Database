@@ -153,7 +153,8 @@ def view_book_logs(session, current_user):
 def view_friends(session, current_user):
     print()
     print("---------------View Friends---------------")
-    #TODO Print all friends of the current user's uid
+    Friend.listFriends(session, current_user.uid)
+    print()
     print("Would you like to Friend or Unfriend a user, or return to the Home Page?")
     input = utils.get_input_str("-> ")
     print()
