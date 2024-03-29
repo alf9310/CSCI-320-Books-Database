@@ -1,3 +1,4 @@
+from math import ceil
 from sqlalchemy import create_engine, Column, Integer, String, DateTime, ForeignKey
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import declarative_base
@@ -38,7 +39,7 @@ class Collection(Base):
     @classmethod
     def create(cls, session, name, uid):
         try:
-            max_cid = session.query(func.max(cls.cid)).scalar() or 0  # Get the maximum uid, or default to 0 if table is empty
+            max_cid = session.query(func.max(cls.cid)).scalar() or 0  # Get the maximum cid, or default to 0 if table is empty
             new_collection = cls(cid = max_cid + 1, name=name, uid=uid)
             session.add(new_collection)
             session.commit()
@@ -56,9 +57,11 @@ class Collection(Base):
     Order by order_by and can limit the number of results returned with limit.
     '''
     @classmethod
-    def search(cls, session, uid=None, name=None, order_by=None, limit=None):
+    def search(cls, session, cid=None, uid=None, name=None, order_by=None, limit=None):
         query = session.query(Collection)
 
+        if cid:
+            query = query.filter(Collection.cid == cid)
         if uid:
             query = query.filter(Collection.uid == uid)
         if name:
@@ -160,3 +163,101 @@ class In_Collection(Base):
     def delete(self, session):
         session.delete(self)
         session.commit()
+
+'''
+Function for creating a new collection.
+Prompts the user for the name of the collection.
+@param session - object for the current session
+@param uid - the ID of the currently logged in user
+@return True if successful, False if unsuccessful
+'''
+def create_collection(session, uid):
+    new_collection
+    
+    while (True):
+        new_name = input("Please enter the collection name. [q to quit]")
+        if (new_name == ""):
+            print("Please enter a name.")
+            continue
+        if (len(new_name) > 50):
+            print("This name is too long!")
+            continue
+        if (new_name == "q"):
+            return False
+        new_collection = Collection.create(session, name=new_name, uid=uid)
+        break
+
+    new_collection.save(session)
+    return True
+
+'''
+Function for renaming a collection.
+Prompts the user for the new name of the collection.
+@param session - object for the current session
+@param cid - the ID for the collection to rename
+@return True if successful, False if unsuccessful
+'''
+def rename_collection(session, cid):
+    results, count = Collection.search(cid=cid)
+
+    if (count != 1):
+        print("No collection found!")
+        return False
+    
+    current = results[0]
+
+    while (True):
+        new_name = input(f'Enter the new name for "{current.name}" [q to quit]')
+        if (new_name == ""):
+            print("Please enter a name.")
+            continue
+        if (len(new_name) > 50):
+            print("This name is too long!")
+            continue
+        if (new_name == "q"):
+            return False
+        
+        current.name = new_name
+        current.save(session)
+        return True
+
+'''
+Function for selecting a collection.
+Lists all of the collections owned by a user.
+Allows the user to flip thru the pages of collections.
+@param session - object for the current session
+@param uid - the ID for the user's account
+@return CID if successful, False if unsuccessful
+'''
+def select_collection(session, uid):
+    results, count = Collection.search(uid=uid)
+
+    if (count == 0):
+        print("No collections found!")
+        return False
+    
+    per_page = 15
+    cur_page = 0
+    max_page = ceil(count / per_page)
+    
+    current = results[0]
+
+    while (True):
+        # Print the current page
+        print("Your collections: ")
+
+        print(f"Page {cur_page + 1}")
+
+        new_name = input(f'Enter the new name for "{current.name}" [q to quit]')
+        if (new_name == ""):
+            print("Please enter a name.")
+            continue
+        if (len(new_name) > 50):
+            print("This name is too long!")
+            continue
+        if (new_name == "q"):
+            return False
+        
+        current.name = new_name
+        current.save(session)
+        return True
