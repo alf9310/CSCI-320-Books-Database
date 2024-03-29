@@ -82,7 +82,7 @@ def home_page(session, current_user):
             home_page(session, current_user)
     return
 
-def find_books(session, current_user, query = None):
+def find_books(session, current_user, descending = False, query = None):
     print()
     print("---------------Find Books---------------")
     print("What would you like to search for books by? Options:")
@@ -98,15 +98,16 @@ def find_books(session, current_user, query = None):
         case "Title":
             print("Enter Book Title")
             title = utils.get_input_str("-> ")
-            query, total_count = Book.search(session, title=title, order_by="title", query=query)
+            query, total_count = Book.search(session, title=title, order_by="title", descending = descending, query=query)
             print(total_count, "Books found")
             for result in query:
                 print(result)
                 print()
             cont = utils.ask_continue("Would you like to filter this list?")
             if cont:
+                descending = utils.ask_continue("Would you like to sort by descending order?")
                 print("Filtering List")
-                find_books(session, current_user, query = query)
+                find_books(session, current_user, descending = descending, query = query)
             else:
                 find_books(session, current_user)
         case "Release Date":
@@ -114,57 +115,61 @@ def find_books(session, current_user, query = None):
             min_release_date = utils.get_input_str("-> ")
             print("Enter Book Maximum Release Date")
             max_release_date = utils.get_input_str("-> ")
-            query, total_count = Book.search(session, release_date=[min_release_date, max_release_date], order_by="title", query=query)
+            query, total_count = Book.search(session, release_date=[min_release_date, max_release_date], order_by="title", descending = descending, query=query)
             print(total_count, "Books found")
             for result in query:
                 print(result)
                 print()
             cont = utils.ask_continue("Would you like to filter this list?")
             if cont:
+                descending = utils.ask_continue("Would you like to sort by descending order?")
                 print("Filtering List")
-                find_books(session, current_user, query = query)
+                find_books(session, current_user, descending = descending, query = query)
             else:
                 find_books(session, current_user)
         case "Author":
             print("Enter Book Author")
             author = utils.get_input_str("-> ")
-            query, total_count = Book.search(session, author=author, order_by="title", query=query)
+            query, total_count = Book.search(session, author=author, order_by="title", descending = descending, query=query)
             print(total_count, "Books found")
             for result in query:
                 print(result)
                 print()
             cont = utils.ask_continue("Would you like to filter this list?")
             if cont:
+                descending = utils.ask_continue("Would you like to sort by descending order?")
                 print("Filtering List")
-                find_books(session, current_user, query = query)
+                find_books(session, current_user, descending = descending, query = query)
             else:
                 find_books(session, current_user)
         case "Publisher":
             print("Enter Book Publisher")
             publisher = utils.get_input_str("-> ")
-            query, total_count = Book.search(session, publisher=publisher, order_by="title", query=query)
+            query, total_count = Book.search(session, publisher=publisher, order_by="title", descending = descending, query=query)
             print(total_count, "Books found")
             for result in query:
                 print(result)
                 print()
             cont = utils.ask_continue("Would you like to filter this list?")
             if cont:
+                descending = utils.ask_continue("Would you like to sort by descending order?")
                 print("Filtering List")
-                find_books(session, current_user, query = query)
+                find_books(session, current_user, descending = descending, query = query)
             else:
                 find_books(session, current_user)
         case "Genre":
             print("Enter Book Genre")
             genre = utils.get_input_str("-> ")
-            query, total_count = Book.search(session, genre=genre, order_by="title", query=query)
+            query, total_count = Book.search(session, genre=genre, order_by="title", descending = descending, query=query)
             print(total_count, "Books found")
             for result in query:
                 print(result)
                 print()
             cont = utils.ask_continue("Would you like to filter this list?")
             if cont:
+                descending = utils.ask_continue("Would you like to sort by descending order?")
                 print("Filtering List")
-                find_books(session, current_user, query = query)
+                find_books(session, current_user, descending = descending, query = query)
             else:
                 find_books(session, current_user)
         case "Home Page":
