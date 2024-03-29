@@ -1,8 +1,10 @@
 import connect
 import utils
+
 from users import Users
 from friend import Friend
 from book import Book
+from log_book import Log
 
 def login(session):
     print()
@@ -192,6 +194,7 @@ def view_collections(session, current_user):
 def view_book_logs(session, current_user):
     print()
     print("---------------View Book Logs---------------")
+    Log.listLogs(session, current_user.uid)
     #TODO Search logs by the current user's uid, sort by most recent
     #TODO add book view where users can add to collection, add to log, or rate
     return

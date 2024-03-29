@@ -107,3 +107,18 @@ class Log(Base):
     def delete(self, session):
         session.delete(self)
         session.commit()
+
+    '''
+    Get a list of all logs of some user
+    '''
+    def listLogs(session, uid):
+        query = session.query(Log)
+        query = query.filter(Log.uid == uid)
+
+        count = query.count()
+        if count == 0:
+            print("You have no logs!")
+        else:
+            for entry in query:
+                log, fcount = Log.search(session, uid=entry.uid)
+                print(log[0])

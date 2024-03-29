@@ -6,8 +6,6 @@ from typing import Union
 from sqlalchemy.sql.expression import func
 from sqlalchemy.orm import relationship
 
-from log_book import Log
-
 Base = declarative_base()
 
 class Users(Base):

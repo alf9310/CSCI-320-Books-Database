@@ -8,8 +8,6 @@ from sqlalchemy.orm import relationship
 from sqlalchemy import and_
 
 
-from log_book import Log
-
 Base = declarative_base()
 
 class Book(Base):
