@@ -1,6 +1,5 @@
 import connect
 import utils
-import search
 from users import Users
 from friend import Friend
 from book import Book
@@ -107,7 +106,17 @@ def find_books(session, current_user, query = None):
             if cont:
                 find_books(session, current_user, query = query)
         case "Release Date":
-            pass #TODO
+            print("Enter Book Minimum Release Date")
+            min_release_date = utils.get_input_str("-> ")
+            print("Enter Book Maximum Release Date")
+            max_release_date = utils.get_input_str("-> ")
+            results, total_count = Book.search(session, release_date=[min_release_date, max_release_date], query=query)
+            print(total_count, "Books found")
+            for result in results:
+                print(result)
+            cont = utils.ask_continue("Would you like to filter this list?")
+            if cont:
+                find_books(session, current_user, query = query)
         case "Author":
             print("Enter Book Author")
             author = utils.get_input_str("-> ")

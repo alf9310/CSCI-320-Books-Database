@@ -5,6 +5,7 @@ from sqlalchemy.sql.expression import func
 from sqlalchemy import text
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
+from sqlalchemy import and_
 
 
 Base = declarative_base()
@@ -77,7 +78,9 @@ class Book(Base):
         if title:
             query = query.filter(Book.title.ilike(f"%{title}%"))
         if release_date:
-            pass # TODO
+            min_release_date, max_release_date = release_date
+            # Join with ReleasedAs table to access the release date
+            query = query.join(ReleasedAs).filter(and_(ReleasedAs.date >= min_release_date, ReleasedAs.date <= max_release_date))
         if author:
             # Join the WrittenBy and Person tables to filter by author
             query = query.join(WrittenBy).join(Person).filter(Person.person_name.ilike(f"%{author}%"))
