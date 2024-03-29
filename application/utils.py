@@ -15,6 +15,19 @@ def ask_continue(prompt: str) -> bool:
         print("Invalid input: usage [y/n]")
 
 
+def get_find_book_filter(prompt: str) -> bool:
+    user_in = ""
+    valid_list = ["Title", "Release Date", "Author", "Publisher", "Genre", "Home Page"]
+    while (True):
+        user_in = input(f'\n{prompt}\n-> ')
+        if user_in in valid_list: 
+            break
+        else:
+            print("Invalid input, please enter either " + 
+                  "\'Title\', \'Release Date\', \'Author\', \'Publisher\', \'Genre\' or \'Home Page\'")
+    return user_in
+
+
 def get_input_str(message: str) -> str:
     user_in = ""
     invalid_list = [""]

@@ -5,9 +5,9 @@ from log_book import Log
 from math import ceil
 from users import Users
 from friend import Friend
-from book import Book
+from book import Book, Rates
 from collection import view_collections, collection_prompt_add
-from rating import Rates
+
 
 def login(session):
     print()
@@ -110,23 +110,24 @@ def results_view(session, current_user, query, count):
         print("No books found.\nTry a different search!")
         return
 
+    
+    # Print the current page
+    print("--- SEARCH RESULTS ---")
+    print(count, "Books found")
+
+    # Prints a page
+    # Starts at cur_page, then prints up to per_page entries
+    start_index = cur_page * per_page
+    for i in range(start_index, start_index + per_page):
+        if (i >= count):
+            break
+        string_rep = query[i].__str__(session)
+        print(f"{i+1}:\t{string_rep}")
+        # TODO books need to show ratings
+
+    print(f"Page {cur_page + 1} of {max_page + 1}")
+    
     while (True):
-        # Print the current page
-        print("--- SEARCH RESULTS ---")
-        print(count, "Books found")
-
-        # Prints a page
-        # Starts at cur_page, then prints up to per_page entries
-        start_index = cur_page * per_page
-        for i in range(start_index, start_index + per_page):
-            if (i >= count):
-                break
-            string_rep = query[i].__str__(session)
-            print(f"{i+1}:\t{string_rep}")
-            # TODO books need to show ratings
-
-        print(f"Page {cur_page + 1} of {max_page + 1}")
-
         # Prompt for input
         cmd = input(f'\nPlease enter your command [h for help]\n-> ')
         
@@ -292,13 +293,13 @@ def find_books(session, current_user):
         print("Publisher")
         print("Genre")
         print("Home Page")
-        input = utils.get_input_str("-> ")
         print()
 
         query = []
 
         # get all results from search criteria
-        match input:
+        
+        match utils.get_find_book_filter("Please enter your search"):
             case "Title":
                 print("Enter Book Title")
                 title = utils.get_input_str("-> ")
@@ -328,10 +329,6 @@ def find_books(session, current_user):
 
             case "Home Page":
                 return
-
-            case _:
-                print("Invalid input, please enter either " + 
-                      "\'Title\', \'Release Date\', \'Author\', \'Publisher\', \'Genre\' or \'Home Page\'")
 
         #ok now print the results
         results_view(session, current_user, query, total_count)
