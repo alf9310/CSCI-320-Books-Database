@@ -25,8 +25,7 @@ Users will be able to create new accounts and access via login. The system must 
   - Collections name
   - Number of books in the collection
   - Total length of the books (in pages) in the collection
-  - Users will be able to search for books by name, release date, authors, publisher, or
-  - genre. The resulting list of books must show the books name, the authors, the pub-
+  - Users will be able to search for books by name, release date, authors, publisher, or genre. The resulting list of books must show the books name, the authors, the pub-
 lisher, the length, audience and the ratings. The list must be sorted alphabetically
 (ascending) by books name and release date. Users can sort the resulting list: book
 name, publisher, genre, and released year (ascending and descending).

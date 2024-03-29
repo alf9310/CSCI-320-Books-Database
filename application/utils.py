@@ -1,3 +1,4 @@
+import datetime
 ### Utility file, put any, multipurpose functions in this file to be used
 ### throughout the application
 
@@ -36,6 +37,21 @@ def get_desc_or_asc(message: str) -> str:
         else:
             break
     return user_in.upper()
+
+
+def get_date_str(message: str) -> str:
+    user_in = ""
+    invalid_list = [""]
+    while (True):
+        user_in = input(f'\n{message} [YYYY-MM-DD]\n-> ')
+        try:
+            if user_in in invalid_list or not datetime.date.fromisoformat(user_in): 
+                print("invalid input")
+            else:
+                break
+        except:
+            print("invalid input")
+    return user_in
 
 
 def get_input_int(message: str) -> str:

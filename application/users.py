@@ -2,6 +2,7 @@ from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.orm import declarative_base
 from datetime import datetime
 from sqlalchemy.sql.expression import func
+from sqlalchemy.orm import relationship
 
 Base = declarative_base()
 
@@ -19,6 +20,8 @@ class Users(Base):
     created_date = Column(DateTime, default=datetime.now)
     last_accessed = Column(DateTime, default=datetime.now)
 
+    logs = relationship("Log", back_populates="user")
+    
     '''
     User Constructor
     '''
