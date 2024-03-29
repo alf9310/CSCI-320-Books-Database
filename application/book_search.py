@@ -1,6 +1,9 @@
 import connect
 import utils
 
+# sswitch to inner when there is more data
+SELECT_STATEMENT = "SELECT book.title, author.person_name AS author_name, publisher.person_name AS publisher_name, book.length, book.min_age, book.max_age, AVG(rates.rating)"
+
 def search_by_title() -> None:
     is_still_searching = True
     while(is_still_searching):
@@ -9,13 +12,38 @@ def search_by_title() -> None:
         print(f'Your search was, {title}\n')
 
         query_statement = f"\
-            SELECT * \
+            {SELECT_STATEMENT} \
             FROM book \
-            WHERE title ILIKE '%{title}%'"
+            INNER JOIN written_by \
+            ON book.bid = written_by.bid \
+            INNER JOIN person author \
+            ON written_by.pid = author.pid \
+            INNER JOIN published_by \
+            ON book.bid = published_by.bid \
+            INNER JOIN person publisher \
+            ON published_by.pid = publisher.pid \
+            INNER JOIN rates \
+            ON book.bid = rates.bid \
+            INNER JOIN released_as \
+            ON book.bid = released_as.bid \
+            WHERE title ILIKE '%{title}%' \
+            GROUP BY \
+            book.title, author.person_name, publisher.person_name, book.length, book.min_age, book.max_age, released_as.date \
+            ORDER BY \
+            book.title ASC, \
+            released_as.date ASC"
+            
         query_results = connect.execute_query(query_statement) 
         if query_results: 
             for results in query_results:
-                print(results)
+                book_title = results[0]
+                author = results[1]
+                publisher = results[2]
+                book_length = results[3]
+                book_min_age = results[4]
+                book_max_age = results[5]
+                book_rating = results[6]
+                print(f'{book_title}, {author}, {publisher}, {book_length} pages, {book_min_age}-{book_max_age}, {book_rating:.1f} stars')
         else:
             print("No results")
         
@@ -198,7 +226,7 @@ def search_by_genre() -> None:
         query_results = connect.execute_query(query_statement) 
         if query_results: 
             for results in query_results:
-                print(f'{results[1]}:  {results[0]}')
+                print(f'{results[1]}: {results[0]}')
         else:
             print("No results")
         
@@ -227,7 +255,7 @@ def search_by_rates() -> None:
         query_results = connect.execute_query(query_statement) 
         if query_results: 
             for results in query_results:
-                print(f'{results[1]:.1f}:  {results[0]}')
+                print(f'{results[1]:.1f}: {results[0]}')
         else:
             print("No results")
         
@@ -252,7 +280,7 @@ def search_release_date() -> None:
         query_results = connect.execute_query(query_statement) 
         if query_results: 
             for results in query_results:
-                print(f'{results[1]}:  {results[0]}')
+                print(f'{results[1]}: {results[0]}')
         else:
             print("No results")
         
@@ -278,7 +306,7 @@ def search_format() -> None:
         query_results = connect.execute_query(query_statement) 
         if query_results: 
             for results in query_results:
-                print(f'{results[1]}:  {results[0]}')
+                print(f'{results[1]}: {results[0]}')
         else:
             print("No results")
         

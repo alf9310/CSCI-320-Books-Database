@@ -93,7 +93,7 @@ def main():
 
 
     # ----------------Testing Book Searching----------------
-    # search.search_by_title() 
+    book_search.search_by_title() 
     # search.search_by_length()
     #search.search_by_min_age()
     #search.search_by_max_age()
@@ -102,7 +102,7 @@ def main():
     #search.search_by_edited()
     #search.search_by_published()
     # book_search.search_release_date()
-    book_search.search_format()
+    # ook_search.search_format()
     session.close()
 
 if __name__ == "__main__":
