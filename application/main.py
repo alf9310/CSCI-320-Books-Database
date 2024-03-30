@@ -159,35 +159,58 @@ def results_view(session, current_user, query, count):
                 # ASC or DESC (ascending or descending)
                 # it should alter the "query" variable in the scope
                 # of THIS function
-                order_by = "title"
+                order_by = "na"
                 descending = False
                 attributes = ("Title", "Publisher", "Genre", "Released Year")
-                print("What would you like to sort by?")
-                for i, attribute in enumerate(attributes):
-                    print(f"{i+1}:\t{attribute}")
-                sort_attribute = utils.get_input_int("-> ")
-                match sort_attribute:
-                    case "1":
-                        order_by = "title"
-                    case "2":
-                        order_by = "publisher"
-                    case "3":
-                        order_by = "genre"
-                    case "4":
-                        order_by = "release_year"
-                    case _:
-                        print(f"Please select a value in the range [1, {len(attributes)}].")
+                
+                while True:
+                    print("What would you like to sort by? [q to quit]")
+                    
+                    for i, attribute in enumerate(attributes):
+                        print(f"{i+1}:\t{attribute}")
+                    
+                    sort_attribute = utils.get_input_int("-> ")
+                    
+                    match sort_attribute:
+                        case "1":
+                            order_by = "title"
+                        case "2":
+                            order_by = "publisher"
+                        case "3":
+                            order_by = "genre"
+                        case "4":
+                            order_by = "release_year"
+                        case "q":
+                            break
+                        case _:
+                            print(f"Please select a value in the range [1, {len(attributes)}].")
+                            continue
+                    
+                    break
+                
+                if (order_by == "na"):
+                    # exit the warrior
+                    # todays tom sawyer
+                    continue
+                    
                 print("Would you like to sort in ascending or descending order?")
                 print("1:\tAscending")
                 print("2:\tDescending")
                 sort_order = utils.get_input_int("-> ")
-                match sort_order:
-                    case "1":
-                        descending = False
-                    case "2":
-                        descending = True
-                    case _:
-                        print(f"Please select a value in the range [1, 2].")
+                
+                while True:
+                    match sort_order:
+                        case "1":
+                            descending = False
+                        case "2":
+                            descending = True
+                        case _:
+                            print(f"Please select a value in the range [1, 2].")
+                            continue
+                    break
+                
+                # order_by has attribute,
+                # descending has sort order
                 query, count = Book.search(session, query = query, order_by=order_by, descending=descending)
 
                 # also sets the current page back to 0 >:]

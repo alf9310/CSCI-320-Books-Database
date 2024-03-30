@@ -98,19 +98,17 @@ class Book(UserBase):
 
         if order_by and order_by in ["title", "publisher", "genre", "release_year"]:
             # Determine the column to order by
-            column = getattr(cls, order_by)
+            column = getattr(Book, order_by)
             print("Sorting by:", order_by)
             print("Descending order:", descending)
             if descending:
                 print("Applying descending order")
-                query = query.order_by(column.desc())
+                query = query.order_by(None).order_by(column.desc())
             else:
                 print("Applying ascending order")
-                query = query.order_by(column)
-
+                query = query.order_by(None).order_by(column)
 
         total_count = query.count()
-
 
         if limit:
             query = query.limit(limit)
@@ -305,7 +303,7 @@ class Rates(UserBase):
                 average_rating += entry.rating
                 rating_count += 1
             average_rating /= rating_count
-            return str(average_rating)
+            return str(round(average_rating, 1))
 
 
     def rating_view(session, uid):
