@@ -62,7 +62,7 @@ def home_page(session, current_user):
     print("View Collections")
     print("View Book Logs")
     print("View Friends")
-    print("Rate Books")
+    print("View Ratings")
     print("Log Out")
     input = utils.get_input_str("-> ")
     print()
@@ -79,7 +79,7 @@ def home_page(session, current_user):
         case "View Friends":
             view_friends(session, current_user)
             home_page(session, current_user)
-        case "Rate Books":
+        case "View Ratings":
             rate_book(session, current_user)
             home_page(session, current_user)
         case "Log Out":
@@ -242,7 +242,7 @@ def results_view(session, current_user, query, count):
                 # Rating stuff here!
 
                 # Verify number is good
-                if (cmd[1].isdigit()):
+                if (len(cmd) == 2 and cmd[1].isdigit()):
 
                     # convert to int
                     index = int(cmd[1]) - 1
@@ -261,8 +261,31 @@ def results_view(session, current_user, query, count):
                     # Ideally, this function prompts the user for a number 1-5
                     # to rate the book, or display the current rating if the
                     # user has already rated this book. Ratings can be updated.
-                    continue              
 
+                    ratings, rating_count = Rates.search(session, uid=current_user.uid, bid=query[index].bid)
+                    if(rating_count > 0):
+                        print("You have given", query[index].title, "a rating of", ratings.first().rating)
+                        confirm = utils.ask_continue("Would you like to change rating?")
+                        if (confirm):
+                            while (True):
+                                try:
+                                    changed_rating = utils.get_input_str("rating (1-5)? ")
+                                    new_rating_int = int(changed_rating)
+                                    break
+                                except Exception as e:
+                                    print("Invalid Rating")
+                                    continue
+                            Rates.change_rating(session, current_user.uid, query[index].bid, new_rating_int)
+                    else:
+                        while (True):
+                            try:
+                                rating = utils.get_input_str("rating (1-5)? ")
+                                rating_int = int(rating)
+                                break
+                            except Exception as e:
+                                print("Invalid Rating")
+                                continue
+                        Rates.create(session, current_user.uid, query[index].bid, rating_int)
                 else:
                     print(f"Please select a value in the range [1, {count}].")
 
@@ -403,7 +426,7 @@ def view_friends(session, current_user):
 
 def rate_book(session, current_user):
     print()
-    print("---------------Rate Books---------------")
+    print("---------------Book Ratings ---------------")
     print()
     print("Would you like to Rate Book or View Ratings? ")
     first_input = utils.get_input_str("-> ")
