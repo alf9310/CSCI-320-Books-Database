@@ -269,23 +269,25 @@ def results_view(session, current_user, query, count):
                         if (confirm):
                             while (True):
                                 try:
-                                    changed_rating = utils.get_input_str("rating (1-5)? ")
+                                    changed_rating = utils.get_input_str("Enter the new rating (1-5)? ")
                                     new_rating_int = int(changed_rating)
                                     break
                                 except Exception as e:
                                     print("Invalid Rating")
                                     continue
                             Rates.change_rating(session, current_user.uid, query[index].bid, new_rating_int)
+                            print("Updated successfully!")
                     else:
                         while (True):
                             try:
-                                rating = utils.get_input_str("rating (1-5)? ")
+                                rating = utils.get_input_str("What is your rating (1-5)? ")
                                 rating_int = int(rating)
                                 break
                             except Exception as e:
                                 print("Invalid Rating")
                                 continue
                         Rates.create(session, current_user.uid, query[index].bid, rating_int)
+                        print("Rated successfully!")
                 else:
                     print(f"Please select a value in the range [1, {count}].")
 
@@ -311,6 +313,12 @@ def results_view(session, current_user, query, count):
                     # Simply return out of the function to return here.
                     # Ideally, this function prompts the user for a start page,
                     # end page, start time, and end time.
+
+                    start_time = utils.get_date_str("start time?")
+                    end_time = utils.get_date_str("end time?")
+                    start_page = utils.get_input_int("\nstart page?\n-> ")
+                    end_page = utils.get_input_int("\nend page?\n-> ")
+                    Log.create(session, query[index], current_user.uid, start_time, end_time, start_page, end_page)
                     continue              
 
                 else:
@@ -390,6 +398,7 @@ def view_book_logs(session, current_user):
     # display all the logs this user currently has
     Log.listLogs(session, current_user.uid)
     print()
+    return
     user_in = utils.ask_continue("Would you like to record a new log?")
     if user_in:
         title = utils.get_input_str("\nWhat book would you like to log?\n-> ")
@@ -428,6 +437,9 @@ def rate_book(session, current_user):
     print()
     print("---------------Book Ratings ---------------")
     print()
+    Rates.rating_view(session, current_user.uid)
+    return
+    
     print("Would you like to Rate Book or View Ratings? ")
     first_input = utils.get_input_str("-> ")
     match first_input:
@@ -449,7 +461,7 @@ def rate_book(session, current_user):
                 match new_input:
                     case "y":
                         try:
-                            changed_rating = utils.get_input_str("rating (1-5)? ")
+                            changed_rating = utils.get_input_str("What would you like to rate this book! (1-5)? ")
                             new_rating_int = int(changed_rating)
                         except Exception as e:
                             print("Invalid Rating")
