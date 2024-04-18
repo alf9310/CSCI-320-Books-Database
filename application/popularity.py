@@ -1,47 +1,19 @@
-from users import Users
-from friend import Friend
-from book import Book, Rates
-from log_book import Log
 
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
+from book import Book, Rates
 from sqlalchemy.orm import declarative_base
 from datetime import datetime, timedelta
 from sqlalchemy.sql.expression import func
+from sqlalchemy.sql import text
 
 Base = declarative_base()
 
 '''
 Calculates the "popularity" value of a given book.
-Popularity = avg_rating * (number_of_recent_logs)^1.2
+Popularity = avg_rating^2 * number_of_recent_logs
 '''
-def calculate_popularity_time( session, book, time_filter ):
-    avg_rating = Rates.get_average_rating(session, book.bid)
+def calculate_popularity( log_count, avg_rating ):
 
-    # No Ratings yet?
-    if (avg_rating == "-"):
-        return 0
-    else:
-        # convert from string to float
-        avg_rating = float(avg_rating)
-
-    if (avg_rating < 3):
-        return 0
-    
-    results = False
-    count = False
-
-    # Was a time provided?
-    if (time_filter and isinstance(time_filter, datetime)):
-        # Any log BEFORE time_filter is ignored
-        results, count = Log.search(session=session, bid=book.bid, start_time=time_filter)
-    else:
-        results, count = Log.search(session=session, bid=book.bid) 
-
-    # Default val if something goes wrong / no recent logs
-    if (not count):
-        return 0
-
-    return count * avg_rating * avg_rating
+    return log_count * avg_rating * avg_rating
 
 '''
 Displays the top 20 books from the past
@@ -49,26 +21,31 @@ Displays the top 20 books from the past
 '''
 def recently_popular_books( session ):
     
-    print("Please wait...")
+    print("Please hold...")
     
     # Create a blank array for the books and their popularity
     arr = [[-1 for i in range(2)] for j in range(20)]
 
-    # Query is ALL books
-    query, count = Book.search(session)
-
     # 90 days ago
     time_filter = datetime.now() - timedelta(days=90)
 
-    for book in query:
+    # Get logs within the past 90 days
+    #log_arr, log_count = Log.search(session=session, start_time=time_filter, order_by="bid")
+    book_occurrence = session.execute(text(f"""SELECT bid, COUNT(*) AS log_count
+    FROM logs
+    WHERE start_time >= '{time_filter.strftime('%Y-%m-%d %H:%M:%S')}'
+    GROUP BY bid"""))
+
+    for i in range(len(book_occurrence[0])):
+
+        # Get the avg
+        avg_rating = session.query(func.avg(Rates.rating).label('average')).filter(Rates.bid==book_occurrence[0][i])      
+        avg_rating = session.execute(avg_rating).first()[0]
         
-        popularity = calculate_popularity_time(session, book, time_filter)
-        
-        if (popularity <= 0):
-            continue
+        popularity = calculate_popularity(book_occurrence[1][i], avg_rating)
 
         # arr holds the top 20 books in order,
-        # column 1 is the book instance,
+        # column 1 is the book id,
         # column 2 is the popularity rating
 
         # goes from index 0 to index 19
@@ -79,7 +56,7 @@ def recently_popular_books( session ):
                     arr[i-1][0] = arr[i][0]
                     arr[i-1][1] = arr[i][1]
                 # replace
-                arr[i][0] = book
+                arr[i][0] = book_occurrence[0][i]
                 arr[i][1] = popularity
             else:
                 break
@@ -87,7 +64,10 @@ def recently_popular_books( session ):
     # Now display
     print("---- 90-Day Trending Books ----")
     for i in reversed(range(20)):
-        string_rep = arr[i][0].__str__(session)
+        if (arr[i][0] == -1):
+            break
+        b_query, b_count = Book.search(session=session, bid=arr[i][0])
+        string_rep = b_query[0].__str__(session)
         print(f"#{20-i} :\t{string_rep}")
 
         

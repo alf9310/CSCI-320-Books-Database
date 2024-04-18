@@ -81,4 +81,3 @@ def execute_query(query: str) -> list:
         record = curs.fetchall()
 
         return record
-
