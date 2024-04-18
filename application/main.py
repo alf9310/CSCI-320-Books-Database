@@ -5,7 +5,7 @@ from log_book import Log
 from math import ceil
 from users import Users
 from friend import Friend
-from popularity import recently_popular_books, friend_popular_books
+from popularity import recently_popular_books, friend_popular_books, popular_new_releases
 from book import Book, Rates
 from collection import view_collections, collection_prompt_add
 
@@ -418,6 +418,10 @@ def popular_books(session, current_user):
                 friend_popular_books(session, current_user)
                 return
 
+            case "3":
+                popular_new_releases(session)
+                return
+            
             case "5":
                 return
 
