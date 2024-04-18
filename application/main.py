@@ -5,6 +5,7 @@ from log_book import Log
 from math import ceil
 from users import Users
 from friend import Friend
+from popularity import recently_popular_books
 from book import Book, Rates
 from collection import view_collections, collection_prompt_add
 
@@ -63,6 +64,7 @@ def home_page(session, current_user):
     print("View Book Logs")
     print("View Friends")
     print("View Ratings")
+    print("Popular Books")
     print("Log Out")
     input = utils.get_input_str("-> ")
     print()
@@ -81,6 +83,9 @@ def home_page(session, current_user):
             home_page(session, current_user)
         case "View Ratings":
             rate_book(session, current_user)
+            home_page(session, current_user)
+        case "Popular Books":
+            popular_books(session, current_user)
             home_page(session, current_user)
         case "Log Out":
             print("You have been logged out\n")
@@ -391,12 +396,33 @@ def find_books(session, current_user):
     # TODO Users can sort the resulting list: book name, publisher, genre, and released year (ascending and descending)
     return
 
+def popular_books(session, current_user):
+    
+    while (True):
+        print()
+        print("------------Popular Books------------")
+        print("Which category would you like? Options:")
+        print("1:\tLast 90 Days")
+        print("2:\tAmong My Friends")
+        print("3:\tNew Releases")
+        print("4:\tRecommended For Me")
+        print("5:\tReturn to Home Page")
+        print()
+        
+        match utils.get_input_str("Please enter your selection [1-5]\n-> "):
+            case "1":
+                recently_popular_books(session)
+                return
+
+            case "5":
+                return
+
 def view_book_logs(session, current_user):
     print()
     print("---------------View Book Logs---------------")
     #TODO Search logs by the current user's uid, sort by most recent
     # display all the logs this user currently has
-    Log.listLogs(session, current_user.uid)
+    Log.list_logs(session, current_user.uid)
     print()
     return
     user_in = utils.ask_continue("Would you like to record a new log?")

@@ -112,7 +112,7 @@ class Log(UserBase):
     '''
     Get a list of all logs of some user
     '''
-    def listLogs(session, uid):
+    def list_logs(session, uid):
         query = session.query(Log)
         query = query.filter(Log.uid == uid)
 
