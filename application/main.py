@@ -64,6 +64,7 @@ def home_page(session, current_user):
     print("View Book Logs")
     print("View Friends")
     print("View Ratings")
+    print("View Profiles")
     print("Popular Books")
     print("Log Out")
     input = utils.get_input_str("-> ")
@@ -83,6 +84,9 @@ def home_page(session, current_user):
             home_page(session, current_user)
         case "View Ratings":
             rate_book(session, current_user)
+            home_page(session, current_user)
+        case "View Profiles":
+            view_profile(session, current_user)
             home_page(session, current_user)
         case "Popular Books":
             popular_books(session, current_user)
@@ -458,6 +462,41 @@ def view_friends(session, current_user):
             print("Invalid input, please enter either \'Friend\', \'Unfriend\' or \'Home Page\'")
             view_friends(session, current_user)
     return
+
+def view_profile(session, current_user):
+    print()
+    print("--------------View Profiles---------------")
+    print()
+    print("Would you like to View Own Profile or View Other Profile?")
+    print()
+    input = utils.get_input_str(("-> "))
+    match input:
+        case "View Own Profile":
+            user_id = (current_user.uid)
+            view_profile_specific(session, current_user, current_user)
+        case "View Other Profile":
+            print("Search by username or email?")
+            type_input = utils.get_input_str(("-> "))
+            match type_input:
+                case "username":
+                    name_input = utils.get_input_str(("-> "))
+                case "email":
+                    name_input = utils.get_input_str(("-> "))
+
+            
+
+
+
+    
+def view_profile_specific(session, current_user, viewed_user):
+    print()
+    first_name = (viewed_user.first_name)
+    last_name = (viewed_user.last_name)
+    username = (viewed_user.username)
+    print(first_name, last_name)
+    print("Username:", username)
+    
+
 
 def rate_book(session, current_user):
     print()
