@@ -441,7 +441,12 @@ def view_collections(session, current_user):
 
     while (True):
         # Print the current page
-        print("Your collections: ")
+        if(count == 1):
+            print("You have " + str(count) + " collection.")
+        else:
+            print("You have " + str(count) + " collections.")
+
+        print("\nYour collections: ")
 
         if (count == 0):
             print("You have no collections!")
