@@ -5,7 +5,7 @@ from log_book import Log
 from math import ceil
 from users import Users
 from friend import Friend
-from popularity import recently_popular_books
+from popularity import recently_popular_books, friend_popular_books
 from book import Book, Rates
 from collection import view_collections, collection_prompt_add
 
@@ -412,6 +412,10 @@ def popular_books(session, current_user):
         match utils.get_input_str("Please enter your selection [1-5]\n-> "):
             case "1":
                 recently_popular_books(session)
+                return
+
+            case "2":
+                friend_popular_books(session, current_user)
                 return
 
             case "5":

@@ -17,6 +17,7 @@ def calculate_popularity( log_count, avg_rating ):
 '''
 Displays the top 20 books from the past
 90 days
+
 '''
 def recently_popular_books( session ):
     
@@ -68,5 +69,56 @@ def recently_popular_books( session ):
         string_rep = b_query[0].__str__(session)
         print(f"#{20-i} :\t{string_rep}")
 
-        
+"""
+Displays the top 20 books among my friends.
+"""        
+def friend_popular_books( session, current_user ):
+    
+    print("Calculating popularity...")
+    
+    # Create a blank array for the books and their popularity
+    arr = [[-1 for i in range(2)] for j in range(20)]
 
+    # 90 days ago
+    time_filter = datetime.now() - timedelta(days=90)
+
+    # Get logs within the past 90 days
+    book_occurrence = session.execute(text(f"""SELECT l.bid, COUNT(*) AS friend_log_count
+        FROM logs AS l
+        JOIN friend AS f ON l.uid = f.friend_id
+        WHERE f.uid = {current_user.uid}
+        GROUP BY l.bid;""")).all()
+
+    for i in range(len(book_occurrence)):
+
+        # Get the avg
+        avg_rating = session.query(func.avg(Rates.rating).label('average')).filter(Rates.bid==book_occurrence[i][0])     
+        avg_rating = session.execute(avg_rating).first()[0]
+        
+        popularity = calculate_popularity(book_occurrence[i][1], avg_rating)
+
+        # arr holds the top 20 books in order,
+        # column 1 is the book id,
+        # column 2 is the popularity rating
+
+        # goes from index 0 to index 19
+        for k in range(20):
+            if (popularity > arr[k][1]):
+                if (k > 0):
+                    # move the current one back
+                    arr[k-1][0] = arr[k][0]
+                    arr[k-1][1] = arr[k][1]
+                # replace
+                arr[k][0] = book_occurrence[i][0]
+                arr[k][1] = popularity
+            else:
+                break
+
+    # Now display
+    print("---- Trending Books Among My Friends ----")
+    for i in reversed(range(20)):
+        if (arr[i][0] == -1):
+            break
+        b_query, b_count = Book.search(session=session, bid=arr[i][0])
+        string_rep = b_query[0].__str__(session)
+        print(f"#{20-i} :\t{string_rep}")
