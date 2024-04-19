@@ -106,7 +106,12 @@ class Friend(Base):
             for entry in query:
                 friendName, fcount = Users.search(session, uid=entry.friend_id)
                 print(friendName[0].username)
-    
+        print("\nFollowing: " + str(count))
+        queryFollow = session.query(Friend)
+        queryFollow = queryFollow.filter(Friend.friend_id == uid)
+        countFollow = queryFollow.count()
+        print("Followers: " + str(countFollow))
+
     def countFriends(session, uid):
         query = session.query(Friend)
         query = query.filter(Friend.uid == uid)
