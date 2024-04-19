@@ -1,9 +1,8 @@
-from sqlalchemy import create_engine, Column, Integer, String, DateTime
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.orm import declarative_base
 from datetime import datetime
-from typing import Union
 from sqlalchemy.sql.expression import func
+from sqlalchemy.orm import relationship
 
 Base = declarative_base()
 
@@ -21,6 +20,8 @@ class Users(Base):
     created_date = Column(DateTime, default=datetime.now)
     last_accessed = Column(DateTime, default=datetime.now)
 
+    logs = relationship("Log", back_populates="user")
+    
     '''
     User Constructor
     '''
@@ -72,9 +73,9 @@ class Users(Base):
         if last_name:
             query = query.filter(Users.last_name.ilike(f"%{last_name}%"))
         if username:
-            query = query.filter(Users.username.ilike(f"%{username}%"))
+            query = query.filter(Users.username.like(f"{username}"))
         if password:
-            query = query.filter(Users.password.ilike(f"%{password}%"))
+            query = query.filter(Users.password.like(f"{password}"))
         if email:
             query = query.filter(Users.email.ilike(f"%{email}%"))
 

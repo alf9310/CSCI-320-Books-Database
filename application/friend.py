@@ -1,9 +1,5 @@
-from sqlalchemy import create_engine, Column, Integer, String, DateTime
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import Column, Integer
 from sqlalchemy.orm import declarative_base
-from datetime import datetime
-from typing import Union
-from sqlalchemy.sql.expression import func
 from sqlalchemy.exc import IntegrityError
 
 from users import Users
@@ -110,3 +106,8 @@ class Friend(Base):
             for entry in query:
                 friendName, fcount = Users.search(session, uid=entry.friend_id)
                 print(friendName[0].username)
+        print("\nFolliwng: " + str(count))
+        queryFollow = session.query(Friend)
+        queryFollow = queryFollow.filter(Friend.friend_id == uid)
+        countFollow = queryFollow.count()
+        print("Followers: " + str(countFollow))

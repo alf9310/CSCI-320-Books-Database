@@ -1,3 +1,4 @@
+import datetime
 ### Utility file, put any, multipurpose functions in this file to be used
 ### throughout the application
 
@@ -12,6 +13,19 @@ def ask_continue(prompt: str) -> bool:
         if (user_in.upper() == "N" or user_in.upper() == "NO"): 
             return False
         print("Invalid input: usage [y/n]")
+
+
+def get_find_book_filter(prompt: str) -> bool:
+    user_in = ""
+    valid_list = ["Title", "Release Date", "Author", "Publisher", "Genre", "Home Page"]
+    while (True):
+        user_in = input(f'\n{prompt}\n-> ')
+        if user_in in valid_list: 
+            break
+        else:
+            print("\nInvalid input, please enter either " + 
+                  "\'Title\', \'Release Date\', \'Author\', \'Publisher\', \'Genre\' or \'Home Page\'")
+    return user_in
 
 
 def get_input_str(message: str) -> str:
@@ -36,6 +50,21 @@ def get_desc_or_asc(message: str) -> str:
         else:
             break
     return user_in.upper()
+
+
+def get_date_str(message: str) -> str:
+    user_in = ""
+    invalid_list = [""]
+    while (True):
+        user_in = input(f'\n{message} [YYYY-MM-DD]\n-> ')
+        try:
+            if user_in in invalid_list or not datetime.date.fromisoformat(user_in): 
+                print("invalid input")
+            else:
+                break
+        except:
+            print("invalid input")
+    return user_in
 
 
 def get_input_int(message: str) -> str:
