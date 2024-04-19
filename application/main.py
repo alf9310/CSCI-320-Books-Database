@@ -519,9 +519,18 @@ def view_profile_specific(session, current_user, viewed_user):
     query, collection_count = Collection.search(session=session, uid=uid)
     print("Number of Collections:", collection_count)
     following_count = Friend.countFriends(session=session, uid=uid)
-    print("Number Followed:", friend_count)
+    print("Number Followed:", following_count)
     follower_count = Friend.countFollowers(session=session, friend_id=uid)
     print("Number of Followers:", follower_count)
+    print("Top 10 Books:")
+    query, rating_count = Rates.search(session, uid=uid,order_by="rating", descending=True, limit=10)
+    for entry in query:
+        title = (session.query(Book).filter_by(bid=entry.bid).first()).title
+        print(f"\tTitle: {title}, Rating: {entry.rating}")
+
+    return
+
+
     
 
     
