@@ -268,7 +268,7 @@ class Rates(UserBase):
 
     
     @classmethod
-    def search(cls, session, uid=None, bid=None, rating=None, order_by=None):
+    def search(cls, session, uid=None, bid=None, rating=None, order_by=None, descending=False, limit=None):
         query = session.query(Rates)
         if uid:
             query = query.filter(Rates.uid == uid)
@@ -278,10 +278,18 @@ class Rates(UserBase):
             query = query.filter(Rates.rating == rating)
 
         total_count = query.count()
+        
 
         if order_by:
             if hasattr(Rates, order_by):
+                column = getattr(Rates, order_by)
                 query = query.order_by(getattr(Rates, order_by))
+                if descending:
+                    query = query.order_by(None).order_by(column.desc())
+
+        
+        if limit:
+            query = query.limit(limit)
 
         return query, total_count
 
@@ -306,7 +314,7 @@ class Rates(UserBase):
             return str(round(average_rating, 1))
 
 
-    def rating_view(session, uid):
+    def rating_view(session, uid, limit=None):
         query = session.query(Rates)
         query = query.filter(Rates.uid == uid)
 
@@ -317,3 +325,4 @@ class Rates(UserBase):
             for entry in query:
                 title = (session.query(Book).filter_by(bid=entry.bid).first()).title
                 print(f"\tTitle: {title}, Rating: {entry.rating}")
+

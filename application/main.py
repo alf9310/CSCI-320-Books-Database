@@ -7,7 +7,8 @@ from users import Users
 from friend import Friend
 from popularity import recently_popular_books, friend_popular_books, popular_new_releases, recommended_for_me
 from book import Book, Rates
-from collection import view_collections, collection_prompt_add
+# from collection import view_collections, collection_prompt_add
+from collection import Collection, view_collections, collection_prompt_add
 
 
 def login(session):
@@ -64,6 +65,7 @@ def home_page(session, current_user):
     print("View Book Logs")
     print("View Friends")
     print("View Ratings")
+    print("View Profiles")
     print("Popular Books")
     print("Log Out")
     input = utils.get_input_str("-> ")
@@ -84,6 +86,9 @@ def home_page(session, current_user):
         case "View Ratings":
             rate_book(session, current_user)
             home_page(session, current_user)
+        case "View Profiles":
+            view_profile(session, current_user)
+            home_page(session, current_user)
         case "Popular Books":
             popular_books(session, current_user)
             home_page(session, current_user)
@@ -92,7 +97,7 @@ def home_page(session, current_user):
             login(session)
         case _:
             print("Invalid input, please enter either " + 
-                  "\'Find Books\', \'View Collections\', \'View Book Logs\', \'View Friends\' or \'Log Out\'")
+                  "\'Find Books\', \'View Collections\', \'View Book Logs\', \'View Friends\', \'View Ratings\', \'View Profiles\', or \'Log Out\'")
             home_page(session, current_user)
     return
 
@@ -470,6 +475,78 @@ def view_friends(session, current_user):
             print("Invalid input, please enter either \'Friend\', \'Unfriend\' or \'Home Page\'")
             view_friends(session, current_user)
     return
+
+def view_profile(session, current_user):
+    print()
+    print("--------------View Profiles---------------")
+    print()
+    print("Would you like to View Own Profile, View Other Profile, or return to Home Page?")
+    print()
+    input = utils.get_input_str(("-> "))
+    match input:
+        case "View Own Profile":
+            view_profile_specific(session, current_user, current_user)
+        case "View Other Profile":
+            print("Search by username or email?")
+            type_input = utils.get_input_str(("-> "))
+            match type_input:
+                case "username":
+                    name_input = utils.get_input_str(("-> "))
+                    results, total_count = Users.search(session=session, username=name_input)
+                    
+                    if(total_count < 1):
+                        print("Invalid Username")
+                        view_profile(session, current_user)
+                    else:
+                        user_to_view = results[0]
+                        view_profile_specific(session, current_user, user_to_view)
+                    
+                case "email":
+                    name_input = utils.get_input_str(("-> "))
+                    results, total_count = Users.search(session=session, email=name_input)
+                    if(total_count < 1):
+                        print("Invalid Email")
+                        view_profile(session, current_user)
+                    else:
+                        user_to_view = results[0]
+                        view_profile_specific(session, current_user, user_to_view)
+        case "Home Page":
+            return
+
+            
+
+
+
+    
+def view_profile_specific(session, current_user, viewed_user):
+    print()
+    first_name = (viewed_user.first_name)
+    last_name = (viewed_user.last_name)
+    username = (viewed_user.username)
+    email = (viewed_user.email)
+    print(first_name, last_name)
+    print("Username:", username)
+    print("Email:", email)
+    uid = (viewed_user.uid)
+    query, collection_count = Collection.search(session=session, uid=uid)
+    print("Number of Collections:", collection_count)
+    following_count = Friend.countFriends(session=session, uid=uid)
+    print("Number Followed:", following_count)
+    follower_count = Friend.countFollowers(session=session, friend_id=uid)
+    print("Number of Followers:", follower_count)
+    print("Top 10 Books:")
+    query, rating_count = Rates.search(session, uid=uid,order_by="rating", descending=True, limit=10)
+    for entry in query:
+        title = (session.query(Book).filter_by(bid=entry.bid).first()).title
+        print(f"\tTitle: {title}, Rating: {entry.rating}")
+
+    return
+
+
+    
+
+    
+
 
 def rate_book(session, current_user):
     print()
