@@ -179,3 +179,90 @@ def popular_new_releases( session ):
         b_query, b_count = Book.search(session=session, bid=arr[i][0])
         string_rep = b_query[0].__str__(session)
         print(f"#{5-i} :\t{string_rep}")
+
+"""
+Recommends some books that the current user might enjoy.
+Takes genre and author into account.
+Shows books with a high rating and log count.
+"""
+def recommended_for_me( session, current_user ):
+    print("Please wait...")
+    
+    # Create a blank array for the books and their popularity
+    arr = [[-1 for i in range(2)] for j in range(10)]
+
+    # Get count of most read genres
+    popular_genres = session.execute(text(f"""SELECT hg.gid AS genre_id, COUNT(l.bid) AS book_count
+        FROM logs l
+        JOIN has_genre AS hg ON l.bid = hg.bid
+        WHERE l.uid = {current_user.uid}
+        GROUP BY hg.gid
+        ORDER BY book_count DESC
+        LIMIT 3;
+        """)).all()
+    
+    # Get count of most read authors
+    popular_authors = session.execute(text(f"""SELECT wb.pid AS author_id, COUNT(l.bid) AS book_count
+        FROM logs l
+        JOIN written_by AS wb ON l.bid = wb.bid
+        WHERE l.uid = {current_user.uid}
+        GROUP BY wb.pid
+        ORDER BY book_count DESC
+        LIMIT 3;
+        """)).all()
+    
+    # Format these "top 3s" into sql strings
+    genre_str = "( "
+    for i in range(len(popular_genres)):
+        genre_str += str(popular_genres[i][0]) + ", "
+    genre_str += "-1 )"
+
+    author_str = "( "
+    for i in range(len(popular_authors)):
+        author_str += str(popular_authors[i][0]) + ", "
+    author_str += "-1 )"
+
+    # Get count of most read authors
+    book_occurrence = session.execute(text(f"""SELECT l.bid, COUNT(*) AS log_count
+        FROM logs l
+        JOIN has_genre hg ON l.bid = hg.bid
+        LEFT JOIN written_by wb ON l.bid = wb.bid
+        WHERE (hg.gid IN {genre_str}
+            OR wb.pid IN {author_str})
+        AND l.bid NOT IN (SELECT bid FROM logs WHERE uid = {current_user.uid})
+        GROUP BY l.bid;
+        """)).all()
+    
+    for i in range(len(book_occurrence)):
+
+        # Get the avg
+        avg_rating = session.query(func.avg(Rates.rating).label('average')).filter(Rates.bid==book_occurrence[i][0])     
+        avg_rating = session.execute(avg_rating).first()[0]
+        
+        popularity = calculate_popularity(book_occurrence[i][1], avg_rating)
+
+        # arr holds the top 20 books in order,
+        # column 1 is the book id,
+        # column 2 is the popularity rating
+
+        # goes from index 0 to index 9
+        for k in range(10):
+            if (popularity > arr[k][1]):
+                if (k > 0):
+                    # move the current one back
+                    arr[k-1][0] = arr[k][0]
+                    arr[k-1][1] = arr[k][1]
+                # replace
+                arr[k][0] = book_occurrence[i][0]
+                arr[k][1] = popularity
+            else:
+                break
+
+    # Now display
+    print("---- Recommended For YOU ----")
+    for i in reversed(range(10)):
+        if (arr[i][0] == -1):
+            break
+        b_query, b_count = Book.search(session=session, bid=arr[i][0])
+        string_rep = b_query[0].__str__(session)
+        print(f"#{10-i} :\t{string_rep}")
