@@ -106,3 +106,15 @@ class Friend(Base):
             for entry in query:
                 friendName, fcount = Users.search(session, uid=entry.friend_id)
                 print(friendName[0].username)
+    
+    def countFriends(session, uid):
+        query = session.query(Friend)
+        query = query.filter(Friend.uid == uid)
+        count = query.count()
+        return count
+
+    def countFollowers(session, friend_id):
+        query = session.query(Friend)
+        query = query.filter(Friend.friend_id == friend_id)
+        count = query.count()
+        return count

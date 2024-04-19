@@ -7,7 +7,8 @@ from users import Users
 from friend import Friend
 from popularity import recently_popular_books
 from book import Book, Rates
-from collection import view_collections, collection_prompt_add
+# from collection import view_collections, collection_prompt_add
+from collection import Collection, view_collections, collection_prompt_add
 
 
 def login(session):
@@ -96,7 +97,7 @@ def home_page(session, current_user):
             login(session)
         case _:
             print("Invalid input, please enter either " + 
-                  "\'Find Books\', \'View Collections\', \'View Book Logs\', \'View Friends\' or \'Log Out\'")
+                  "\'Find Books\', \'View Collections\', \'View Book Logs\', \'View Friends\', \'View Ratings\', \'View Profiles\', or \'Log Out\'")
             home_page(session, current_user)
     return
 
@@ -467,12 +468,11 @@ def view_profile(session, current_user):
     print()
     print("--------------View Profiles---------------")
     print()
-    print("Would you like to View Own Profile or View Other Profile?")
+    print("Would you like to View Own Profile, View Other Profile, or return to Home Page?")
     print()
     input = utils.get_input_str(("-> "))
     match input:
         case "View Own Profile":
-            user_id = (current_user.uid)
             view_profile_specific(session, current_user, current_user)
         case "View Other Profile":
             print("Search by username or email?")
@@ -480,8 +480,26 @@ def view_profile(session, current_user):
             match type_input:
                 case "username":
                     name_input = utils.get_input_str(("-> "))
+                    results, total_count = Users.search(session=session, username=name_input)
+                    
+                    if(total_count < 1):
+                        print("Invalid Username")
+                        view_profile(session, current_user)
+                    else:
+                        user_to_view = results[0]
+                        view_profile_specific(session, current_user, user_to_view)
+                    
                 case "email":
                     name_input = utils.get_input_str(("-> "))
+                    results, total_count = Users.search(session=session, email=name_input)
+                    if(total_count < 1):
+                        print("Invalid Email")
+                        view_profile(session, current_user)
+                    else:
+                        user_to_view = results[0]
+                        view_profile_specific(session, current_user, user_to_view)
+        case "Home Page":
+            return
 
             
 
@@ -493,8 +511,19 @@ def view_profile_specific(session, current_user, viewed_user):
     first_name = (viewed_user.first_name)
     last_name = (viewed_user.last_name)
     username = (viewed_user.username)
+    email = (viewed_user.email)
     print(first_name, last_name)
     print("Username:", username)
+    print("Email:", email)
+    uid = (viewed_user.uid)
+    query, collection_count = Collection.search(session=session, uid=uid)
+    print("Number of Collections:", collection_count)
+    following_count = Friend.countFriends(session=session, uid=uid)
+    print("Number Followed:", friend_count)
+    follower_count = Friend.countFollowers(session=session, friend_id=uid)
+    print("Number of Followers:", follower_count)
+    
+
     
 
 
